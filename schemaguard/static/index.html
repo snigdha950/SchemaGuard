@@ -1,16 +1,70 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SchemaGuard | Migration workbench</title><link rel="stylesheet" href="/static/styles.css"></head>
-<body><div class="app-shell">
-<header class="topbar"><div class="brand"><div class="logomark">S<span>G</span></div><div><strong>SchemaGuard</strong><small>Migration workbench</small></div></div><div class="header-right"><span class="chip">Demo workspace</span><span id="connection" class="status-pill checking">Graph: checking</span><span id="modelStatus" class="status-pill checking">Model: checking</span><span id="agentStatus" class="status-pill checking">Agent: not run</span></div></header>
-<main><section class="hero"><div class="eyebrow">A small lab for safer schema changes</div><h1>Check the impact before the migration.</h1><p>Some old deployments and workers still read columns that the latest app has stopped using. SchemaGuard follows those connections and tests the repair in SQLite before recommending a change.</p></section>
-<section class="control-panel"><div><label for="target">Proposed change</label><div class="select-wrap"><code>ALTER TABLE users DROP COLUMN</code><select id="target"><option value="users.legacy_status">legacy_status</option><option value="users.retired_flag">retired_flag (unused)</option></select></div><p class="hint">Controlled demo data, not your production database. <span class="fixture-note">Configuration: <code id="version">—</code></span></p></div><div class="actions"><button id="run" class="primary">Run agent investigation</button><button id="replay" class="secondary">Run SQL comparison</button><button id="reset" class="quiet">Reset demo</button></div></section>
-<div id="state" class="notice idle"><span class="notice-dot"></span><div><strong>Ready to inspect</strong><p>Graph investigations require a live FalkorDB service and a configured LLM. SQL replay runs independently.</p></div></div>
-<section class="results-summary" aria-live="polite"><div class="results-heading"><span>What the SQL checks show</span><small>Reference cases · Not agent-generated</small></div><div id="resultSummary">Loading reference checks…</div></section>
-<div class="stats"><div class="stat"><span>Graph reads</span><strong id="depCount">—</strong><small>observed read edges</small></div><div class="stat"><span>Affected consumers</span><strong id="affectedCount">—</strong><small>active paths to target</small></div><div class="stat"><span>SQL reference plans passed</span><strong id="sqlPassedCount">—</strong><small>deterministic, not agent-selected</small></div><div class="stat"><span>Agent-verified recommendations</span><strong id="agentVerifiedCount">—</strong><small>stored in FalkorDB for this fixture</small></div></div>
-<div class="two-col"><section class="surface graph-surface"><div class="section-heading"><div><div class="eyebrow">FalkorDB / Dependency evidence</div><h2>Dependency map</h2></div><span class="legend"><i></i> Affected path</span></div><div id="graphArea" class="graph-area"><div class="placeholder">Graph paths appear when FalkorDB is connected and evidence has been seeded.</div></div><p class="footnote">Paths are retrieved from FalkorDB. Active deployments, queries and observed reads are shown together.</p></section>
-<section class="surface"><div class="section-heading"><div><div class="eyebrow">FalkorDB / Active deployments</div><h2>Who still uses it?</h2></div></div><div id="consumers" class="consumer-list"><div class="placeholder">No graph-backed investigation loaded.</div></div><div id="coverage" class="coverage"></div></section></div>
-<div class="two-col lower"><section class="surface"><div class="section-heading"><div><div class="eyebrow">SQLite / Replayed checks</div><h2>Compatibility checks</h2></div><span id="sqlMode" class="chip subtle">AWAITING RUN</span></div><div id="attempts" class="attempts"><div class="placeholder">Run SQL comparison to see an immediate failure, a partial repair, and a verified reference plan.</div></div></section><section class="surface"><div class="section-heading"><div><div class="eyebrow">Model / Tool execution</div><h2>Agent activity &amp; recommendation</h2></div></div><div id="activity" class="activity"><div class="placeholder">Actual model tool calls appear here after a successful agent run. SQL comparison is separate.</div></div><div id="recommendation" class="recommendation"></div></section></div>
-<section class="challenge-strip surface"><div class="challenge-field"><label for="challengeName">Add a hidden consumer</label><input id="challengeName" maxlength="48" placeholder="surprise-worker-v9"/><label class="toggle"><input id="challengeReads" type="checkbox" checked/> Reads legacy_status</label><label class="toggle"><input id="challengeRequires" type="checkbox"/> Output requires it</label><button id="challenge" class="secondary">Reobserve in FalkorDB</button></div><div class="challenge-field"><span class="field-title">Compare repair candidates</span><button id="compare" class="secondary">Find smallest passing plan</button><button id="repro" class="quiet">Download SQL failure example</button><div id="comparisonResult" class="meta-short">Compare projection repair subsets.</div></div><div class="challenge-field"><span class="field-title">Evidence receipt</span><button id="receipt" class="quiet" disabled>Check &amp; export receipt</button><div id="receiptState" class="meta-short">Only actual model-selected, persisted runs have receipts.</div></div></section>
-<footer><div><strong>SchemaGuard</strong> · Graph Hacks / FalkorDB</div><div>Student-built prototype · Synthetic consumers · Real SQLite checks · No production access</div></footer>
-</main></div><script src="/static/app.js" defer></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#222931">
+  <title>SchemaGuard · Migration review</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" aria-label="Workspace navigation">
+    <a href="#overview" class="wordmark" aria-label="SchemaGuard home"><span class="brand-icon">S<span class="brand-cut">/</span>G</span><span>SchemaGuard<small>Developer workbench</small></span></a>
+    <div class="nav-heading">WORKSPACE</div>
+    <nav class="side-nav">
+      <a class="nav-link current" href="#overview"><span class="nav-symbol">▣</span> Change review</a>
+      <a class="nav-link" href="#verification"><span class="nav-symbol">≡</span> SQL verification</a>
+      <a class="nav-link" href="#impact"><span class="nav-symbol">◇</span> Dependencies</a>
+      <a class="nav-link" href="#trace"><span class="nav-symbol">⌁</span> Agent activity</a>
+      <a class="nav-link" href="#demo-tools"><span class="nav-symbol">⌘</span> Demo tools</a>
+    </nav>
+    <div class="side-bottom"><div class="side-caption">SANDBOX</div><p>Controlled applications<br>SQLite + FalkorDB</p><button id="reset" class="reset-btn">↺ &nbsp; Reset demo data</button></div>
+  </aside>
+
+  <div class="main-area">
+    <header class="topbar">
+      <div class="breadcrumbs">Workspace <span>/</span> <strong>Migration review</strong></div>
+      <div class="header-status" aria-label="Service status">
+        <span id="connection" class="status-pill checking">Graph: checking</span>
+        <span id="modelStatus" class="status-pill checking">Model: checking</span>
+        <span id="agentStatus" class="status-pill checking">Agent: not run</span>
+      </div>
+    </header>
+    <main class="content" id="overview">
+      <div class="page-head"><div><div class="page-kicker">SCHEMA CHANGE / 01</div><h1>Migration review</h1><p>Find what a column removal breaks before you apply it.</p></div><div class="project-tag"><span class="tag-dot"></span> Synthetic project</div></div>
+      <section class="change-bar" aria-labelledby="change-heading">
+        <div class="change-input"><label id="change-heading" for="target">Proposed change</label><div class="column-select"><span class="column-prefix">users <span class="slash">/</span></span><select id="target"><option value="users.legacy_status">legacy_status</option><option value="users.retired_flag">retired_flag (unused)</option></select><span class="op-chip">DROP COLUMN</span></div></div>
+        <div class="change-actions"><button id="run" class="primary">Run investigation <span aria-hidden="true">↗</span></button><button id="replay" class="secondary">Run SQL checks</button></div>
+      </section>
+      <div class="subline">Read-only analysis on disposable synthetic data <span class="separator">·</span> Config <code id="version">loading</code></div>
+      <div id="state" class="notice idle" role="status" aria-live="polite"><span class="notice-dot"></span><div><strong>Ready for review</strong><p>SQL checks run locally. Agent investigations require live FalkorDB and a model.</p></div></div>
+
+      <section class="work-section" id="verification" aria-labelledby="verification-title">
+        <div class="section-header"><div><span class="section-index">01</span><h2 id="verification-title">SQL impact</h2><span class="section-sub">Real SQLite · manual reference plans</span></div><span id="sqlMode" class="section-mode">Reference checks</span></div>
+        <div class="impact-head" id="riskSummary"><span class="risk-indicator"></span><div><strong id="riskTitle">Checking the proposed change…</strong><p id="riskDetail">Running reference checks in fresh SQLite databases.</p></div><div class="impact-count"><span id="sqlPassedCount">—</span><small>reference plans passed</small></div></div>
+        <div class="comparison" aria-live="polite"><div class="comparison-header"><span>Scenario</span><span>SQL outcome</span><span>Required output contracts</span><span>Result</span></div><div id="resultSummary" class="comparison-rows">Loading SQL results…</div></div>
+        <details class="technical-details" id="sqlDetails"><summary>Show step-by-step SQL, failures and retained outputs <span>↘</span></summary><div id="attempts" class="attempts"><div class="placeholder">Select “Run SQL checks” to view individual migration steps and SQL errors.</div></div></details>
+        <p class="section-note">These plans are deterministic comparisons, not proposals generated by the agent. SQL reference success is not agent verification.</p>
+      </section>
+
+      <section class="work-section" id="impact" aria-labelledby="impact-title"><div class="section-header"><div><span class="section-index">02</span><h2 id="impact-title">Dependency evidence</h2><span class="section-sub">Retrieved from FalkorDB</span></div><div class="section-counts"><span><strong id="depCount">—</strong> observed reads</span><span><strong id="affectedCount">—</strong> affected consumers</span></div></div>
+        <div class="evidence-layout" id="evidenceLayout"><div class="evidence-pane"><div class="pane-head"><h3>Dependency map</h3><span class="legend-dot"></span><small>Affected path</small></div><div id="graphArea" class="graph-area"><div class="placeholder">Waiting for graph evidence.</div></div></div><div class="consumers-pane"><div class="pane-head"><h3>Active consumers</h3></div><div id="consumers" class="consumer-list"><div class="placeholder">No graph evidence loaded.</div></div><div id="coverage" class="coverage"></div></div></div>
+      </section>
+
+      <section class="work-section" id="trace" aria-labelledby="trace-title"><div class="section-header"><div><span class="section-index">03</span><h2 id="trace-title">Agent run</h2><span class="section-sub">Actual model tool calls and SQL verification</span></div><span class="agent-notice">Separate from SQL reference</span></div>
+        <div class="trace-layout"><div><h3 class="pane-heading">Activity log</h3><div id="activity" class="activity"><div class="placeholder">No agent run yet. Start an investigation to see real tool calls here.</div></div></div><div class="recommend-pane"><h3 class="pane-heading">Recommendation</h3><div id="recommendation" class="recommendation"><div class="placeholder">No verified recommendation recorded.</div></div><div class="receipt-short"><strong>Verified in FalkorDB</strong><span id="agentVerifiedCount">—</span></div></div></div>
+      </section>
+
+      <details class="advanced-tools" id="demo-tools"><summary><span class="tools-symbol">⌘</span> Demo tools <span class="tools-summary">Hidden consumers, candidate search, failure reproduction, receipts</span><span class="chevron">⌄</span></summary>
+        <div class="tools-grid">
+          <section class="tool-group"><h3>Add a hidden consumer</h3><p>Introduce a synthetic worker, reobserve SQL and update the graph.</p><label for="challengeName">Worker name</label><input id="challengeName" maxlength="48" placeholder="surprise-worker-v9" autocomplete="off"><div class="check-row"><label><input id="challengeReads" type="checkbox" checked> Reads legacy_status</label><label><input id="challengeRequires" type="checkbox"> Output requires it</label></div><button id="challenge" class="secondary">Reobserve in FalkorDB</button></section>
+          <section class="tool-group"><h3>Compare repairs</h3><p>Find the smallest passing plan within supported actions, not globally optimal.</p><button id="compare" class="secondary">Compare candidate plans</button><button id="repro" class="text-button">↓ Download SQL failure reproduction</button><p id="comparisonResult" class="tool-result">No comparison run yet.</p></section>
+          <section class="tool-group"><h3>Verification receipt</h3><p>Recheck graph evidence and configuration freshness for a persisted agent run.</p><button id="receipt" class="secondary" disabled>Check &amp; export receipt</button><p id="receiptState" class="tool-result">Available after a verified real-agent run.</p></section>
+        </div>
+      </details>
+      <footer>SchemaGuard <span>Graph Hacks · FalkorDB</span><span>Prototype · Not for production migrations</span></footer>
+    </main>
+  </div>
+</div>
+<script src="/static/app.js" defer></script>
+</body></html>
