@@ -1,0 +1,742 @@
+{
+  "generated_at_ist": "2026-10-18T21:06:55.001911+05:30",
+  "environment": {
+    "python": "3.13.5",
+    "sqlite": "3.46.1",
+    "fixture_version": "bd5f31f00e3c9239",
+    "model_api_key_configured": false
+  },
+  "executed_sql_checks": [
+    {
+      "label": "Latest-version-only baseline (intentionally incomplete)",
+      "scope": "baseline",
+      "status": "unsafe",
+      "verified": false,
+      "actions": [
+        {
+          "type": "drop_column",
+          "target": "users.legacy_status"
+        }
+      ],
+      "applied": [
+        {
+          "action": {
+            "type": "drop_column",
+            "target": "users.legacy_status"
+          },
+          "detail": "SQLite ALTER TABLE users DROP COLUMN legacy_status executed"
+        }
+      ],
+      "failures": [
+        "web-v2",
+        "digest-worker-v1"
+      ],
+      "sqlite_errors": {
+        "web-v2": "OperationalError: no such column: \"legacy_status\" - should this be a string literal in single-quotes?",
+        "digest-worker-v1": "OperationalError: no such column: \"legacy_status\" - should this be a string literal in single-quotes?"
+      },
+      "checks": [
+        {
+          "check": "output:web-v3",
+          "passed": true,
+          "before": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "after": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "error": null
+        },
+        {
+          "check": "output:web-v2",
+          "passed": false,
+          "before": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "after": null,
+          "error": "OperationalError: no such column: \"legacy_status\" - should this be a string literal in single-quotes?"
+        },
+        {
+          "check": "output:digest-worker-v1",
+          "passed": false,
+          "before": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "after": null,
+          "error": "OperationalError: no such column: \"legacy_status\" - should this be a string literal in single-quotes?"
+        },
+        {
+          "check": "all-records-and-unrelated-values",
+          "passed": true,
+          "before": 3,
+          "after": 3
+        },
+        {
+          "check": "target-column-dropped",
+          "passed": true,
+          "before": true,
+          "after": true
+        },
+        {
+          "check": "no-intermediate-breakage",
+          "passed": false,
+          "before": true,
+          "after": false
+        },
+        {
+          "check": "all-required-consumers-executed",
+          "passed": true,
+          "before": [
+            "web-v3",
+            "web-v2",
+            "digest-worker-v1"
+          ],
+          "after": [
+            "web-v3",
+            "web-v2",
+            "digest-worker-v1"
+          ]
+        }
+      ],
+      "step_checks": [
+        {
+          "step": 1,
+          "action": {
+            "type": "drop_column",
+            "target": "users.legacy_status"
+          },
+          "passed": false,
+          "failed_consumers": [
+            "web-v2",
+            "digest-worker-v1"
+          ]
+        }
+      ],
+      "latest_only_would_pass": true,
+      "duration_ms": 1.17
+    },
+    {
+      "label": "One-consumer repair (intentionally incomplete)",
+      "scope": "baseline",
+      "status": "unsafe",
+      "verified": false,
+      "actions": [
+        {
+          "type": "update_projection",
+          "consumer_id": "web-v2",
+          "remove_column": "legacy_status"
+        },
+        {
+          "type": "drop_column",
+          "target": "users.legacy_status"
+        }
+      ],
+      "applied": [
+        {
+          "action": {
+            "type": "update_projection",
+            "consumer_id": "web-v2",
+            "remove_column": "legacy_status"
+          },
+          "detail": "Updated controlled projection for web-v2"
+        },
+        {
+          "action": {
+            "type": "drop_column",
+            "target": "users.legacy_status"
+          },
+          "detail": "SQLite ALTER TABLE users DROP COLUMN legacy_status executed"
+        }
+      ],
+      "failures": [
+        "digest-worker-v1"
+      ],
+      "sqlite_errors": {
+        "digest-worker-v1": "OperationalError: no such column: \"legacy_status\" - should this be a string literal in single-quotes?"
+      },
+      "checks": [
+        {
+          "check": "output:web-v3",
+          "passed": true,
+          "before": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "after": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "error": null
+        },
+        {
+          "check": "output:web-v2",
+          "passed": true,
+          "before": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "after": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "error": null
+        },
+        {
+          "check": "output:digest-worker-v1",
+          "passed": false,
+          "before": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "after": null,
+          "error": "OperationalError: no such column: \"legacy_status\" - should this be a string literal in single-quotes?"
+        },
+        {
+          "check": "all-records-and-unrelated-values",
+          "passed": true,
+          "before": 3,
+          "after": 3
+        },
+        {
+          "check": "target-column-dropped",
+          "passed": true,
+          "before": true,
+          "after": true
+        },
+        {
+          "check": "no-intermediate-breakage",
+          "passed": false,
+          "before": true,
+          "after": false
+        },
+        {
+          "check": "all-required-consumers-executed",
+          "passed": true,
+          "before": [
+            "web-v3",
+            "web-v2",
+            "digest-worker-v1"
+          ],
+          "after": [
+            "web-v3",
+            "web-v2",
+            "digest-worker-v1"
+          ]
+        }
+      ],
+      "step_checks": [
+        {
+          "step": 1,
+          "action": {
+            "type": "update_projection",
+            "consumer_id": "web-v2",
+            "remove_column": "legacy_status"
+          },
+          "passed": true,
+          "failed_consumers": []
+        },
+        {
+          "step": 2,
+          "action": {
+            "type": "drop_column",
+            "target": "users.legacy_status"
+          },
+          "passed": false,
+          "failed_consumers": [
+            "digest-worker-v1"
+          ]
+        }
+      ],
+      "latest_only_would_pass": true,
+      "duration_ms": 0.63
+    },
+    {
+      "label": "All repairable active consumers",
+      "scope": "manual-reference",
+      "status": "verified",
+      "verified": true,
+      "actions": [
+        {
+          "type": "update_projection",
+          "consumer_id": "web-v2",
+          "remove_column": "legacy_status"
+        },
+        {
+          "type": "update_projection",
+          "consumer_id": "digest-worker-v1",
+          "remove_column": "legacy_status"
+        },
+        {
+          "type": "drop_column",
+          "target": "users.legacy_status"
+        }
+      ],
+      "applied": [
+        {
+          "action": {
+            "type": "update_projection",
+            "consumer_id": "web-v2",
+            "remove_column": "legacy_status"
+          },
+          "detail": "Updated controlled projection for web-v2"
+        },
+        {
+          "action": {
+            "type": "update_projection",
+            "consumer_id": "digest-worker-v1",
+            "remove_column": "legacy_status"
+          },
+          "detail": "Updated controlled projection for digest-worker-v1"
+        },
+        {
+          "action": {
+            "type": "drop_column",
+            "target": "users.legacy_status"
+          },
+          "detail": "SQLite ALTER TABLE users DROP COLUMN legacy_status executed"
+        }
+      ],
+      "failures": [],
+      "sqlite_errors": {},
+      "checks": [
+        {
+          "check": "output:web-v3",
+          "passed": true,
+          "before": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "after": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "error": null
+        },
+        {
+          "check": "output:web-v2",
+          "passed": true,
+          "before": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "after": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "error": null
+        },
+        {
+          "check": "output:digest-worker-v1",
+          "passed": true,
+          "before": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "after": [
+            {
+              "id": 1,
+              "name": "Asha"
+            },
+            {
+              "id": 2,
+              "name": "Dev"
+            },
+            {
+              "id": 3,
+              "name": "Mira"
+            }
+          ],
+          "error": null
+        },
+        {
+          "check": "all-records-and-unrelated-values",
+          "passed": true,
+          "before": 3,
+          "after": 3
+        },
+        {
+          "check": "target-column-dropped",
+          "passed": true,
+          "before": true,
+          "after": true
+        },
+        {
+          "check": "no-intermediate-breakage",
+          "passed": true,
+          "before": true,
+          "after": true
+        },
+        {
+          "check": "all-required-consumers-executed",
+          "passed": true,
+          "before": [
+            "web-v3",
+            "web-v2",
+            "digest-worker-v1"
+          ],
+          "after": [
+            "web-v3",
+            "web-v2",
+            "digest-worker-v1"
+          ]
+        }
+      ],
+      "step_checks": [
+        {
+          "step": 1,
+          "action": {
+            "type": "update_projection",
+            "consumer_id": "web-v2",
+            "remove_column": "legacy_status"
+          },
+          "passed": true,
+          "failed_consumers": []
+        },
+        {
+          "step": 2,
+          "action": {
+            "type": "update_projection",
+            "consumer_id": "digest-worker-v1",
+            "remove_column": "legacy_status"
+          },
+          "passed": true,
+          "failed_consumers": []
+        },
+        {
+          "step": 3,
+          "action": {
+            "type": "drop_column",
+            "target": "users.legacy_status"
+          },
+          "passed": true,
+          "failed_consumers": []
+        }
+      ],
+      "latest_only_would_pass": true,
+      "duration_ms": 0.59
+    }
+  ],
+  "unused_field": {
+    "verified": true,
+    "status": "verified",
+    "checks": [
+      {
+        "check": "output:web-v3",
+        "passed": true,
+        "before": [
+          {
+            "id": 1,
+            "name": "Asha"
+          },
+          {
+            "id": 2,
+            "name": "Dev"
+          },
+          {
+            "id": 3,
+            "name": "Mira"
+          }
+        ],
+        "after": [
+          {
+            "id": 1,
+            "name": "Asha"
+          },
+          {
+            "id": 2,
+            "name": "Dev"
+          },
+          {
+            "id": 3,
+            "name": "Mira"
+          }
+        ],
+        "error": null
+      },
+      {
+        "check": "output:web-v2",
+        "passed": true,
+        "before": [
+          {
+            "id": 1,
+            "name": "Asha"
+          },
+          {
+            "id": 2,
+            "name": "Dev"
+          },
+          {
+            "id": 3,
+            "name": "Mira"
+          }
+        ],
+        "after": [
+          {
+            "id": 1,
+            "name": "Asha"
+          },
+          {
+            "id": 2,
+            "name": "Dev"
+          },
+          {
+            "id": 3,
+            "name": "Mira"
+          }
+        ],
+        "error": null
+      },
+      {
+        "check": "output:digest-worker-v1",
+        "passed": true,
+        "before": [
+          {
+            "id": 1,
+            "name": "Asha"
+          },
+          {
+            "id": 2,
+            "name": "Dev"
+          },
+          {
+            "id": 3,
+            "name": "Mira"
+          }
+        ],
+        "after": [
+          {
+            "id": 1,
+            "name": "Asha"
+          },
+          {
+            "id": 2,
+            "name": "Dev"
+          },
+          {
+            "id": 3,
+            "name": "Mira"
+          }
+        ],
+        "error": null
+      },
+      {
+        "check": "all-records-and-unrelated-values",
+        "passed": true,
+        "before": 3,
+        "after": 3
+      },
+      {
+        "check": "target-column-dropped",
+        "passed": true,
+        "before": true,
+        "after": true
+      },
+      {
+        "check": "no-intermediate-breakage",
+        "passed": true,
+        "before": true,
+        "after": true
+      },
+      {
+        "check": "all-required-consumers-executed",
+        "passed": true,
+        "before": [
+          "web-v3",
+          "web-v2",
+          "digest-worker-v1"
+        ],
+        "after": [
+          "web-v3",
+          "web-v2",
+          "digest-worker-v1"
+        ]
+      }
+    ]
+  },
+  "changed_worker_offline_sql": {
+    "label": "worker renamed and target read removed",
+    "fixture_version": "0cc7ed1bc2e3c79c",
+    "verified": false,
+    "failed_consumers": [
+      "web-v2"
+    ]
+  },
+  "required_output_unresolved": {
+    "verified": false,
+    "affected_sql_failures": [
+      "digest-worker-v1"
+    ],
+    "unresolved_required_outputs": [
+      "digest-worker-v1"
+    ]
+  },
+  "test_runner": {
+    "exit_code": 0,
+    "stdout": "................s............                                            [100%]\n28 passed, 1 skipped in 0.31s"
+  },
+  "graph_connectivity": {
+    "real_graph_cypher": "blocked",
+    "real_path_traversal": "not_run",
+    "blocker_type": "ModuleNotFoundError",
+    "blocker": "FalkorDB server or SDK unavailable; no graph claim made"
+  },
+  "llm_integration": {
+    "configured": false,
+    "live_model_tool_calls_executed_in_this_report": false,
+    "separate_live_acceptance_script": "python scripts/live_end_to_end.py",
+    "separate_live_evidence_exists": false
+  },
+  "frontend_checks": {
+    "javascript_syntax": "checked separately with node --check",
+    "chromium_browsing": "real static UI with Python HTTP proxy to actual localhost backend",
+    "screenshots": [
+      "evidence/ui-continuation-sql.png",
+      "evidence/ui-continuation-agent-blocked.png"
+    ],
+    "full_graph_agent_video": "not_recorded"
+  }
+}

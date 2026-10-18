@@ -1,0 +1,702 @@
+{
+  "generated_at_utc": "2026-10-18T15:50:21.583288+00:00",
+  "scope": "REAL_FALKORDB_GRAPH_AND_SQL_NO_LLM_EXECUTION",
+  "input_archive_sha256": "be46a7c05f1ad9d8b56755655d395960d94d5e422ad9ccb123fb2075e50e0788",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "sqlite": "3.53.1",
+  "packages": {
+    "falkordb": "1.8.0",
+    "falkordblite": "0.10.0",
+    "fastapi": "0.146.0",
+    "pytest": "9.1.1",
+    "openai": "2.54.0"
+  },
+  "database_launch": "Official FalkorDBLite bundled Redis and FalkorDB module; standard FalkorDB SDK over loopback TCP. No mocks used for graph checks. Docker deployment not tested.",
+  "redis_version": "8.6.2",
+  "loaded_modules": [
+    [
+      "name",
+      "graph",
+      "ver",
+      41803,
+      "path",
+      "/workspace/scratch/f6c39919562f/schemaguard_review/.venv/lib/python3.12/site-packages/redislite/bin/falkordb.so",
+      "args",
+      []
+    ],
+    [
+      "name",
+      "vectorset",
+      "ver",
+      1,
+      "path",
+      "",
+      "args",
+      []
+    ]
+  ],
+  "fixture_version": "917a9c9f0fa009c3",
+  "seed": {
+    "fixture_version": "917a9c9f0fa009c3",
+    "consumer_count": 4,
+    "observed_reads": 12
+  },
+  "original_context": {
+    "target": "users.legacy_status",
+    "fixture_version": "917a9c9f0fa009c3",
+    "affected": [
+      {
+        "deployment": "deployment:digest-worker-v1",
+        "environment": "synthetic-demo",
+        "consumer": "digest-worker-v1",
+        "kind": "worker",
+        "version": "1.3",
+        "query": "query:digest-worker-v1",
+        "observation": "read:917a9c9f0fa009c3:digest-worker-v1:users.legacy_status",
+        "source": "sqlite.authorizer",
+        "config_version": "917a9c9f0fa009c3"
+      },
+      {
+        "deployment": "deployment:web-v2",
+        "environment": "synthetic-demo",
+        "consumer": "web-v2",
+        "kind": "orm-style-simulation",
+        "version": "2.4",
+        "query": "query:web-v2",
+        "observation": "read:917a9c9f0fa009c3:web-v2:users.legacy_status",
+        "source": "sqlite.authorizer",
+        "config_version": "917a9c9f0fa009c3"
+      }
+    ],
+    "active_consumers": [
+      {
+        "deployment": "deployment:digest-worker-v1",
+        "environment": "synthetic-demo",
+        "consumer": "digest-worker-v1",
+        "kind": "worker",
+        "version": "1.3",
+        "query": "query:digest-worker-v1",
+        "affected": true,
+        "probe_observation": "probe:917a9c9f0fa009c3:digest-worker-v1",
+        "config_version": "917a9c9f0fa009c3"
+      },
+      {
+        "deployment": "deployment:web-v2",
+        "environment": "synthetic-demo",
+        "consumer": "web-v2",
+        "kind": "orm-style-simulation",
+        "version": "2.4",
+        "query": "query:web-v2",
+        "affected": true,
+        "probe_observation": "probe:917a9c9f0fa009c3:web-v2",
+        "config_version": "917a9c9f0fa009c3"
+      },
+      {
+        "deployment": "deployment:web-v3",
+        "environment": "synthetic-demo",
+        "consumer": "web-v3",
+        "kind": "web",
+        "version": "3.0",
+        "query": "query:web-v3",
+        "affected": false,
+        "probe_observation": "probe:917a9c9f0fa009c3:web-v3",
+        "config_version": "917a9c9f0fa009c3"
+      }
+    ],
+    "graph": {
+      "nodes": [
+        {
+          "id": "d:deployment:digest-worker-v1",
+          "label": "digest-worker-v1",
+          "type": "deployment",
+          "active": true
+        },
+        {
+          "id": "v:digest-worker-v1",
+          "label": "digest-worker-v1",
+          "type": "consumer",
+          "active": true,
+          "affected": true
+        },
+        {
+          "id": "q:query:digest-worker-v1",
+          "label": "SELECT digest-worker-v1",
+          "type": "query",
+          "active": true,
+          "affected": true
+        },
+        {
+          "id": "c:users.id",
+          "label": "users.id",
+          "type": "column",
+          "affected": false
+        },
+        {
+          "id": "c:users.legacy_status",
+          "label": "users.legacy_status",
+          "type": "column",
+          "affected": true
+        },
+        {
+          "id": "c:users.name",
+          "label": "users.name",
+          "type": "column",
+          "affected": false
+        },
+        {
+          "id": "d:deployment:preview-v4",
+          "label": "preview-v4",
+          "type": "deployment",
+          "active": false
+        },
+        {
+          "id": "v:preview-v4",
+          "label": "preview-v4",
+          "type": "consumer",
+          "active": false,
+          "affected": false
+        },
+        {
+          "id": "q:query:preview-v4",
+          "label": "SELECT preview-v4",
+          "type": "query",
+          "active": false,
+          "affected": false
+        },
+        {
+          "id": "d:deployment:web-v2",
+          "label": "web-v2",
+          "type": "deployment",
+          "active": true
+        },
+        {
+          "id": "v:web-v2",
+          "label": "web-v2",
+          "type": "consumer",
+          "active": true,
+          "affected": true
+        },
+        {
+          "id": "q:query:web-v2",
+          "label": "SELECT web-v2",
+          "type": "query",
+          "active": true,
+          "affected": true
+        },
+        {
+          "id": "c:users.email",
+          "label": "users.email",
+          "type": "column",
+          "affected": false
+        },
+        {
+          "id": "d:deployment:web-v3",
+          "label": "web-v3",
+          "type": "deployment",
+          "active": true
+        },
+        {
+          "id": "v:web-v3",
+          "label": "web-v3",
+          "type": "consumer",
+          "active": true,
+          "affected": false
+        },
+        {
+          "id": "q:query:web-v3",
+          "label": "SELECT web-v3",
+          "type": "query",
+          "active": true,
+          "affected": false
+        },
+        {
+          "id": "c:users.retired_flag",
+          "label": "users.retired_flag",
+          "type": "column",
+          "affected": false
+        }
+      ],
+      "edges": [
+        {
+          "source": "d:deployment:digest-worker-v1",
+          "target": "v:digest-worker-v1",
+          "type": "RUNS",
+          "affected": true
+        },
+        {
+          "source": "v:digest-worker-v1",
+          "target": "q:query:digest-worker-v1",
+          "type": "EXECUTES",
+          "affected": true
+        },
+        {
+          "source": "q:query:digest-worker-v1",
+          "target": "c:users.id",
+          "type": "READS",
+          "affected": false
+        },
+        {
+          "source": "q:query:digest-worker-v1",
+          "target": "c:users.legacy_status",
+          "type": "READS",
+          "affected": true
+        },
+        {
+          "source": "q:query:digest-worker-v1",
+          "target": "c:users.name",
+          "type": "READS",
+          "affected": false
+        },
+        {
+          "source": "d:deployment:preview-v4",
+          "target": "v:preview-v4",
+          "type": "RUNS",
+          "affected": false
+        },
+        {
+          "source": "v:preview-v4",
+          "target": "q:query:preview-v4",
+          "type": "EXECUTES",
+          "affected": false
+        },
+        {
+          "source": "q:query:preview-v4",
+          "target": "c:users.id",
+          "type": "READS",
+          "affected": false
+        },
+        {
+          "source": "q:query:preview-v4",
+          "target": "c:users.legacy_status",
+          "type": "READS",
+          "affected": false
+        },
+        {
+          "source": "d:deployment:web-v2",
+          "target": "v:web-v2",
+          "type": "RUNS",
+          "affected": true
+        },
+        {
+          "source": "v:web-v2",
+          "target": "q:query:web-v2",
+          "type": "EXECUTES",
+          "affected": true
+        },
+        {
+          "source": "q:query:web-v2",
+          "target": "c:users.email",
+          "type": "READS",
+          "affected": false
+        },
+        {
+          "source": "q:query:web-v2",
+          "target": "c:users.id",
+          "type": "READS",
+          "affected": false
+        },
+        {
+          "source": "q:query:web-v2",
+          "target": "c:users.legacy_status",
+          "type": "READS",
+          "affected": true
+        },
+        {
+          "source": "q:query:web-v2",
+          "target": "c:users.name",
+          "type": "READS",
+          "affected": false
+        },
+        {
+          "source": "d:deployment:web-v3",
+          "target": "v:web-v3",
+          "type": "RUNS",
+          "affected": false
+        },
+        {
+          "source": "v:web-v3",
+          "target": "q:query:web-v3",
+          "type": "EXECUTES",
+          "affected": false
+        },
+        {
+          "source": "q:query:web-v3",
+          "target": "c:users.email",
+          "type": "READS",
+          "affected": false
+        },
+        {
+          "source": "q:query:web-v3",
+          "target": "c:users.id",
+          "type": "READS",
+          "affected": false
+        },
+        {
+          "source": "q:query:web-v3",
+          "target": "c:users.name",
+          "type": "READS",
+          "affected": false
+        }
+      ]
+    },
+    "coverage": {
+      "active_consumers": [
+        "digest-worker-v1",
+        "web-v2",
+        "web-v3"
+      ],
+      "probed_consumers": [
+        "digest-worker-v1",
+        "web-v2",
+        "web-v3"
+      ],
+      "read_edges": 10,
+      "observed_reads": 10,
+      "issues": []
+    },
+    "state": "complete"
+  },
+  "core_real_query_results": {
+    "GET_VERSION": [
+      [
+        "917a9c9f0fa009c3",
+        "legacy_status_hidden_consumer"
+      ]
+    ],
+    "ALL_PATHS": [
+      [
+        "deployment:digest-worker-v1",
+        true,
+        "synthetic-demo",
+        "digest-worker-v1",
+        "worker",
+        "1.3",
+        "query:digest-worker-v1",
+        "users.id"
+      ],
+      [
+        "deployment:digest-worker-v1",
+        true,
+        "synthetic-demo",
+        "digest-worker-v1",
+        "worker",
+        "1.3",
+        "query:digest-worker-v1",
+        "users.legacy_status"
+      ],
+      [
+        "deployment:digest-worker-v1",
+        true,
+        "synthetic-demo",
+        "digest-worker-v1",
+        "worker",
+        "1.3",
+        "query:digest-worker-v1",
+        "users.name"
+      ],
+      [
+        "deployment:preview-v4",
+        false,
+        "synthetic-demo",
+        "preview-v4",
+        "web",
+        "4.0",
+        "query:preview-v4",
+        "users.id"
+      ],
+      [
+        "deployment:preview-v4",
+        false,
+        "synthetic-demo",
+        "preview-v4",
+        "web",
+        "4.0",
+        "query:preview-v4",
+        "users.legacy_status"
+      ],
+      [
+        "deployment:web-v2",
+        true,
+        "synthetic-demo",
+        "web-v2",
+        "orm-style-simulation",
+        "2.4",
+        "query:web-v2",
+        "users.email"
+      ],
+      [
+        "deployment:web-v2",
+        true,
+        "synthetic-demo",
+        "web-v2",
+        "orm-style-simulation",
+        "2.4",
+        "query:web-v2",
+        "users.id"
+      ],
+      [
+        "deployment:web-v2",
+        true,
+        "synthetic-demo",
+        "web-v2",
+        "orm-style-simulation",
+        "2.4",
+        "query:web-v2",
+        "users.legacy_status"
+      ],
+      [
+        "deployment:web-v2",
+        true,
+        "synthetic-demo",
+        "web-v2",
+        "orm-style-simulation",
+        "2.4",
+        "query:web-v2",
+        "users.name"
+      ],
+      [
+        "deployment:web-v3",
+        true,
+        "synthetic-demo",
+        "web-v3",
+        "web",
+        "3.0",
+        "query:web-v3",
+        "users.email"
+      ],
+      [
+        "deployment:web-v3",
+        true,
+        "synthetic-demo",
+        "web-v3",
+        "web",
+        "3.0",
+        "query:web-v3",
+        "users.id"
+      ],
+      [
+        "deployment:web-v3",
+        true,
+        "synthetic-demo",
+        "web-v3",
+        "web",
+        "3.0",
+        "query:web-v3",
+        "users.name"
+      ]
+    ],
+    "ALL_COLUMNS": [
+      [
+        "users.email"
+      ],
+      [
+        "users.id"
+      ],
+      [
+        "users.legacy_status"
+      ],
+      [
+        "users.name"
+      ],
+      [
+        "users.retired_flag"
+      ]
+    ],
+    "AFFECTED": [
+      [
+        "deployment:digest-worker-v1",
+        "synthetic-demo",
+        "digest-worker-v1",
+        "worker",
+        "1.3",
+        "query:digest-worker-v1",
+        "read:917a9c9f0fa009c3:digest-worker-v1:users.legacy_status",
+        "sqlite.authorizer",
+        "917a9c9f0fa009c3"
+      ],
+      [
+        "deployment:web-v2",
+        "synthetic-demo",
+        "web-v2",
+        "orm-style-simulation",
+        "2.4",
+        "query:web-v2",
+        "read:917a9c9f0fa009c3:web-v2:users.legacy_status",
+        "sqlite.authorizer",
+        "917a9c9f0fa009c3"
+      ]
+    ],
+    "OBSERVATION_COVERAGE": [
+      [
+        "digest-worker-v1",
+        "query:digest-worker-v1",
+        "probe:917a9c9f0fa009c3:digest-worker-v1",
+        true,
+        ""
+      ],
+      [
+        "web-v2",
+        "query:web-v2",
+        "probe:917a9c9f0fa009c3:web-v2",
+        true,
+        ""
+      ],
+      [
+        "web-v3",
+        "query:web-v3",
+        "probe:917a9c9f0fa009c3:web-v3",
+        true,
+        ""
+      ]
+    ],
+    "READ_EVIDENCE": [
+      [
+        "digest-worker-v1",
+        "users.id",
+        "read:917a9c9f0fa009c3:digest-worker-v1:users.id"
+      ],
+      [
+        "digest-worker-v1",
+        "users.legacy_status",
+        "read:917a9c9f0fa009c3:digest-worker-v1:users.legacy_status"
+      ],
+      [
+        "digest-worker-v1",
+        "users.name",
+        "read:917a9c9f0fa009c3:digest-worker-v1:users.name"
+      ],
+      [
+        "web-v2",
+        "users.email",
+        "read:917a9c9f0fa009c3:web-v2:users.email"
+      ],
+      [
+        "web-v2",
+        "users.id",
+        "read:917a9c9f0fa009c3:web-v2:users.id"
+      ],
+      [
+        "web-v2",
+        "users.legacy_status",
+        "read:917a9c9f0fa009c3:web-v2:users.legacy_status"
+      ],
+      [
+        "web-v2",
+        "users.name",
+        "read:917a9c9f0fa009c3:web-v2:users.name"
+      ],
+      [
+        "web-v3",
+        "users.email",
+        "read:917a9c9f0fa009c3:web-v3:users.email"
+      ],
+      [
+        "web-v3",
+        "users.id",
+        "read:917a9c9f0fa009c3:web-v3:users.id"
+      ],
+      [
+        "web-v3",
+        "users.name",
+        "read:917a9c9f0fa009c3:web-v3:users.name"
+      ]
+    ]
+  },
+  "changed_graph_blocked": {
+    "state": "incomplete",
+    "affected": [
+      {
+        "deployment": "deployment:web-v2",
+        "environment": "synthetic-demo",
+        "consumer": "web-v2",
+        "kind": "orm-style-simulation",
+        "version": "2.4",
+        "query": "query:web-v2",
+        "observation": "read:917a9c9f0fa009c3:web-v2:users.legacy_status",
+        "source": "sqlite.authorizer",
+        "config_version": "917a9c9f0fa009c3"
+      }
+    ],
+    "issues": [
+      "Active consumer set differs between graph deployments and fixture; refresh/review evidence",
+      "Missing/failed SQLite probe observation for an active consumer",
+      "FalkorDB read evidence does not match fresh SQLite authorizer probes for this configuration"
+    ]
+  },
+  "missing_observation_blocked": {
+    "state": "incomplete",
+    "issues": [
+      "Graph READS edges disagree with stored authorizer evidence; graph mutation requires re-observation",
+      "FalkorDB read evidence does not match fresh SQLite authorizer probes for this configuration",
+      "Affected edge has no matching current-version read observation"
+    ]
+  },
+  "renamed_worker_changed_dependency": {
+    "state": "complete",
+    "affected": [
+      {
+        "deployment": "deployment:web-v2",
+        "environment": "synthetic-demo",
+        "consumer": "web-v2",
+        "kind": "orm-style-simulation",
+        "version": "2.4",
+        "query": "query:web-v2",
+        "observation": "read:1df82d29c7e7b0b3:web-v2:users.legacy_status",
+        "source": "sqlite.authorizer",
+        "config_version": "1df82d29c7e7b0b3"
+      }
+    ],
+    "version": "1df82d29c7e7b0b3"
+  },
+  "persistence_checked_with_independent_client": true,
+  "persistence_test_model": "integration-test-no-model",
+  "non_model_test_excluded_from_agent_count": true,
+  "sql_reference_results": [
+    {
+      "status": "unsafe",
+      "verified": false,
+      "failed_consumers": [
+        "web-v2",
+        "digest-worker-v1"
+      ]
+    },
+    {
+      "status": "unsafe",
+      "verified": false,
+      "failed_consumers": [
+        "digest-worker-v1"
+      ]
+    },
+    {
+      "status": "verified",
+      "verified": true,
+      "failed_consumers": []
+    }
+  ],
+  "pytest": {
+    "returncode": 0,
+    "summary": "31 passed; includes the opt-in actual FalkorDB integration test. Other model/graph doubles remain explicitly unit-only."
+  },
+  "windows_timezone_regression_test": "passed with simulated unavailable IANA timezone data; actual Windows execution not performed",
+  "real_model_calls": 0,
+  "real_model_status": "BLOCKED_MISSING_API_KEY",
+  "remaining": "Privately configure a permitted model key, run scripts/live_end_to_end.py on the participant machine, record the real agent UI, publish repo and submit.",
+  "source_sha256": {
+    "schemaguard/__init__.py": "3c3e6c31496b186df3b082c7be1fc55379311263c2ac78cb84d48d0f78b615c3",
+    "schemaguard/agent.py": "b31a88d104b1568f86dba662e44867e553a0c015944f552c6ee1bf39de0aa0d4",
+    "schemaguard/app.py": "2c48a79591169cd6ea2bf257707b4cefb7f1fb653906915e4a06a25ec3ef1712",
+    "schemaguard/cli.py": "c1be5af4bd48048f7ab4ec3d55f8991263f19944fb1605f4b35234d34629bbc7",
+    "schemaguard/fixtures.py": "0ab6420188949f88a21bf6d746bb6dff236258ccc30f6007e6f86eaf1f2d608b",
+    "schemaguard/graph.py": "b747fde337b29b80c1f08c680b8f80abc8c6061ceb259f23dc147e33f9649246",
+    "schemaguard/queries.py": "7a68eeca79958f8dc31845957d0c14a8cc25d828e6c3e5090c5d8af255a8cf1e",
+    "schemaguard/sqlcheck.py": "d4a25bf596afb0c4574acf4939f1db6340ebc037f1afee87b9f6981ed380f441",
+    "scripts/live_end_to_end.py": "dc1bb536bff2e7b61a0955e7b71c597094b5d7acddfec454a56cf8fd966cf01c",
+    "scripts/verify_and_report.py": "46c7a94403a499ca6f2ee8e083bdcbb2db33532052fadfd60e4f56e8fdc0b443",
+    "tests/test_api.py": "b0a0e525b80776b8904803905327134174469e07a11d520e6fd1eaef4cb8a382",
+    "tests/test_graph_contract.py": "a1f741e4a16c74b1e827d2861b498906af885bf6a2d0ae21c7161e20e8301afe",
+    "tests/test_live_acceptance.py": "0ac72baf581baf287d409cac5e0d547d2a7fc4261ebf69b5f4b9e44ea6dc0727",
+    "tests/test_live_falkor.py": "365bb09dde4307dcf507541ad54349f8cb298134ad879177c82f3e509555137d",
+    "tests/test_sqlcheck.py": "68d8b0bc723e5f661ecd6f34fe3a01cb6ba5808a6194b492897c6655203223a4"
+  }
+}

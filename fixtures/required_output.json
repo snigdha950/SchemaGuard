@@ -1,0 +1,101 @@
+{
+  "fixture_name": "legacy_status_required_output_blocker",
+  "schema": {
+    "users": [
+      "id",
+      "name",
+      "email",
+      "legacy_status",
+      "retired_flag"
+    ]
+  },
+  "rows": [
+    {
+      "id": 1,
+      "name": "Asha",
+      "email": "asha@example.test",
+      "legacy_status": "old",
+      "retired_flag": 0
+    },
+    {
+      "id": 2,
+      "name": "Dev",
+      "email": "dev@example.test",
+      "legacy_status": "new",
+      "retired_flag": 1
+    },
+    {
+      "id": 3,
+      "name": "Mira",
+      "email": "mira@example.test",
+      "legacy_status": "old",
+      "retired_flag": 0
+    }
+  ],
+  "consumers": [
+    {
+      "id": "web-v3",
+      "kind": "web",
+      "version": "3.0",
+      "active": true,
+      "projection": [
+        "id",
+        "name",
+        "email"
+      ],
+      "required_output": [
+        "id",
+        "name"
+      ],
+      "note": "latest web version; reads no legacy_status"
+    },
+    {
+      "id": "web-v2",
+      "kind": "orm-style-simulation",
+      "version": "2.4",
+      "active": true,
+      "projection": [
+        "id",
+        "name",
+        "email",
+        "legacy_status"
+      ],
+      "required_output": [
+        "id",
+        "name"
+      ],
+      "note": "older deployed version; SELECT list generated from model projection"
+    },
+    {
+      "id": "digest-worker-v1",
+      "kind": "worker",
+      "version": "1.3",
+      "active": true,
+      "projection": [
+        "id",
+        "name",
+        "legacy_status"
+      ],
+      "required_output": [
+        "id",
+        "name",
+        "legacy_status"
+      ],
+      "note": "background job with stale SELECT"
+    },
+    {
+      "id": "preview-v4",
+      "kind": "web",
+      "version": "4.0",
+      "active": false,
+      "projection": [
+        "id",
+        "legacy_status"
+      ],
+      "required_output": [
+        "id"
+      ],
+      "note": "inactive experimental preview; not required"
+    }
+  ]
+}
