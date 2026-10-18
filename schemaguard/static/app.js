@@ -23,7 +23,7 @@ function renderGraph(context){
  svg.append(svgNode('text',{x:x+10,y:y+26,fill:active?'#314e47':'#889892','font-size':12,'font-family':'system-ui, sans-serif'},short));});
  $('graphArea').append(svg);
 }
-function renderContext(context){renderGraph(context); $('depCount').textContent=context.coverage.read_edges;$('affectedCount').textContent=context.affected.length;$('version').textContent=context.fixture_version;empty('consumers');
+function renderContext(context){$('evidenceLayout').classList.remove('graph-unavailable');renderGraph(context); $('depCount').textContent=context.coverage.read_edges;$('affectedCount').textContent=context.affected.length;$('version').textContent=context.fixture_version;empty('consumers');
  const affectedById=new Map(context.affected.map(c=>[c.consumer,c]));
  if(!context.active_consumers?.length)$('consumers').append(node('div','placeholder','No active deployed consumers in graph. Check observation coverage.'));
  for(const item of (context.active_consumers||[])){
@@ -47,22 +47,31 @@ function renderAttempts(attempts){empty('attempts');
  const details=node('details');details.append(node('summary','','Show actual before/after checks and SQL'),node('pre','',JSON.stringify({checks:a.checks,step_checks:a.step_checks,baseline:a.baseline,after:a.after,sql_errors:a.sql_errors},null,2)));card.append(details);$('attempts').append(card);});
 }
 function renderActivity(events,rec){empty('activity');for(const event of events){const box=node('div','event');box.append(node('strong','',`${event.ok===false?'✗':'→'} ${event.tool} [step ${event.step}]`));const details=node('details');details.append(node('summary','','Show actual tool arguments and result'),node('pre','',JSON.stringify({input:event.input,result:event.result},null,2)));box.append(details);$('activity').append(box);}empty('recommendation');if(rec){$('recommendation').append(node('strong','',rec.verified?'Verifier-approved recommendation':'Unverified / unsafe recommendation'),node('p','',rec.text),node('p','',`Linked to ${rec.attempt_id} · ${rec.status}`));}}
-function clearGraphForBlocker(message){empty('graphArea');$('graphArea').append(node('div','placeholder',message));empty('consumers');$('depCount').textContent='—';$('affectedCount').textContent='—';$('coverage').textContent='No verified current graph evidence.';}
+function clearGraphForBlocker(message){$('evidenceLayout').classList.add('graph-unavailable');empty('graphArea');$('graphArea').append(node('div','placeholder',message));empty('consumers');$('depCount').textContent='—';$('affectedCount').textContent='—';$('coverage').textContent='No verified current graph evidence.';}
 async function refreshSummary(){
  try{
   const data=await request('/api/summary?target='+encodeURIComponent($('target').value));
   $('sqlPassedCount').textContent=data.sql_reference_plans_passed;
+  $('version').textContent=data.fixture_version;
   const cases=data.reference_results;
   const container=$('resultSummary');container.replaceChildren();
-  const summary=node('div','reference-overview');
-  const labels=['Latest app only','Partial repair','Complete reference plan'];
-  cases.forEach((c,i)=>{
-    const item=node('div','reference-finding '+(c.verified?'success':'danger'));
+  const names=['Remove immediately','Repair one reader, then drop','Repair all active readers'];
+  const refs=['Latest version only','Incomplete repair','Manual reference plan'];
+  for(const [i,c] of cases.entries()){
+    const row=node('div','reference-finding');
+    const desc=node('div');
+    desc.append(node('strong','',names[i]||c.name),node('span','scenario-detail',refs[i]||c.scope));
     const failed=c.failed_consumers||[];
-    const detail=c.verified?`Passed · ${(c.preserved_outputs||[]).length} output contracts retained`:failed.length?`Failed · ${failed.join(', ')}`:'No SQL failures recorded';
-    item.append(node('strong','',labels[i]||c.name),node('span','',detail));summary.append(item);
-  });
-  container.append(summary);
+    const result=node('div',failed.length?'failure':'',failed.length?failed.join(', ')+' fails':'All consumers run');
+    const outputs=node('div','outputs',`${(c.preserved_outputs||[]).length} preserved output contract(s)`);
+    const status=node('span','state-label'+(c.verified?' ok':''),c.verified?'PASS':'FAIL');
+    row.append(desc,result,outputs,status);container.append(row);
+  }
+  const first=cases[0],failures=first?.failed_consumers||[];
+  const unsafe=failures.length>0;
+  $('riskSummary').classList.toggle('safe',!unsafe&&first?.verified===true);
+  $('riskTitle').textContent=unsafe?`Immediate removal breaks ${failures.length} active ${failures.length===1?'consumer':'consumers'}`:first?.verified?'Immediate removal passes the SQL checks':'No safe removal verified';
+  $('riskDetail').textContent=unsafe?`${failures.join(' and ')} still query ${$('target').value}. The newest application alone misses this.`:first?.verified?'No active synthetic consumer required this column in the checked fixture.':'Review the incomplete reference checks.';
  }catch(e){$('resultSummary').textContent='SQLite summary unavailable: '+e.message;$('sqlPassedCount').textContent='—';}
 }
 async function refreshAgentCount(){
@@ -93,3 +102,10 @@ $('compare').addEventListener('click',async()=>{busy(true);try{const c=await req
 $('repro').addEventListener('click',async()=>{busy(true);try{const target=$('target').value;const response=await fetch('/api/reproduction',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({target,actions:[{type:'drop_column',target}]})});if(!response.ok){const d=await response.json();throw new Error(d.detail||'Unable to reproduce')}const blob=await response.blob(),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='schemaguard-sql-reproduction.zip';a.click();setTimeout(()=>URL.revokeObjectURL(url),12000);setState('unsafe','Captured baseline SQL failure','ZIP includes independently runnable repro.py, exact SQL, fixture, expected outputs and observed failure.');}catch(e){setState('blocked','Reproduction unavailable',e.message)}finally{busy(false)}});
 $('challenge').addEventListener('click',async()=>{busy(true);try{const name=$('challengeName').value.trim();if(!name)throw new Error('Enter a new unique worker ID');const old=latestInvestigationId;const result=await request('/api/challenge','POST',{consumer_id:name,reads_target:$('challengeReads').checked,required_target:$('challengeRequires').checked,active:true});renderContext(await request('/api/graph'));await refreshSummary();await refreshAgentCount();empty('attempts');empty('activity');empty('recommendation');if(old){latestInvestigationId=old;$('receipt').disabled=false;$('receiptState').textContent='Configuration changed. Recheck the old receipt.';}setState('idle','Judge challenge reobserved',`Added ${name}; new fixture ${result.fixture_version}. Run agent to investigate changed dependencies.`);}catch(e){setState('blocked','Challenge not committed',e.message)}finally{busy(false)}});
 $('receipt').addEventListener('click',async()=>{if(!latestInvestigationId)return;try{const r=await request('/api/receipt/'+encodeURIComponent(latestInvestigationId));$('receiptState').className='meta-short '+(r.fresh_verified?'ok':'problem');$('receiptState').textContent=r.fresh_verified?'CURRENT VERIFIED':'STALE/NOT VERIFIED: '+r.freshness_reasons.join('; ');setState(r.fresh_verified?'verified':'blocked','Current receipt validation',r.fresh_verified?'Persisted graph evidence and verifier still match.':'Previous status withdrawn until fresh verification.');const blob=new Blob([JSON.stringify(r,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='schemaguard-verification-receipt.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),12000);}catch(e){setState('blocked','Receipt unavailable',e.message)}});
+
+// Keyboard-friendly navigation; reveal demo tools only when requested.
+document.querySelectorAll('.side-nav a').forEach(a=>a.addEventListener('click',()=>{
+  document.querySelectorAll('.side-nav a').forEach(x=>x.classList.remove('current'));
+  a.classList.add('current');
+  if(a.hash==='#demo-tools')$('demo-tools').open=true;
+}));
