@@ -53,3 +53,7 @@ python -m schemaguard.cli check  # needs real FalkorDB
 - Chromium showed real HTML/CSS/JS with browser fetch requests proxied to the actual running localhost FastAPI server because direct browser local navigation was administratively blocked. Screenshots `evidence/ui-continuation-sql.png`, `evidence/ui-continuation-agent-blocked.png` and short `evidence/continuation-offline-only.webm` **only** demonstrate the offline SQL UI + fail-closed model/graph route, not a working full agent.
 - FalkorDB Python SDK install failed due to missing package DNS. Docker command unavailable, port 6379 refused connection; real Cypher/Python SDK integration unverified. No `OPENAI_API_KEY` configured, so no live model call or verified agent recommendation exists here.
 - `python scripts/live_end_to_end.py` is ready for Docker + model key; do not cite its existence as an execution result. The tool stores actual real evidence only when invoked with those prerequisites.
+
+
+## Later bounded challenge verification
+New offline adversarial tests cover unseen worker names, inactive deployment, changed contract, no-read consumer, unsafe ordering, stale graph evidence, receipt version mismatch, partial graph write, and a portable SQL reproduction executed as a Python subprocess. `python -m pytest -q` locally yielded 35 passed, 1 skipped. CI on feature branch should be checked independently. Actual full LLM agent and new Cypher queries are NOT verified here.
