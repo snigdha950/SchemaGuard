@@ -166,3 +166,14 @@ Remove-Item Env:RUN_LIVE_FALKOR
 ```
 
 The fixture/configuration hash includes the canonical fixture JSON, the SQLite library version, and the declared verifier policy version, so rerunning under a different SQLite version requires reseeding/reverification.
+
+
+## 18 October judge challenge and bounded proof tools
+
+The existing dashboard now supports a judge-controlled **synthetic consumer** with an arbitrary safe name. Click **Reobserve in FalkorDB** to execute its controlled SQLite read, reseed the real FalkorDB dependency graph, and update the fixture only when evidence is complete. If the new worker requires the removed field in its public output, the bounded repair remains unresolved. This is not arbitrary repository or ORM discovery.
+
+**Deterministic utilities (not an LLM):** `GET /api/compare` enumerates projection-repair subsets (at most five repairable active consumers) followed by a final column drop. The minimum operation count is only within this bounded search space. `POST /api/reproduction` accepts a tested allowed plan and returns a ZIP with `repro.py` plus captured SQL, expected outputs, observed failure and fixture. Unzip and run `python repro.py`.
+
+**Agent:** may call the `compare_bounded_plans` tool, but must separately choose and `test_plan` then `record_recommendation`. A two-phase persisted-audit check prevents an unfinished graph write from being counted as an agent success. `GET /api/receipt/<investigation_id>` refreshes evidence from real FalkorDB and withdraws current VERIFIED status on graph/fixture/verifier changes. Historical investigations remain stored when reseeding the project-scoped graph.
+
+**NOT YET PROVEN ON THIS ITERATION:** actual LLM execution and new receipt queries against live FalkorDB; run `python scripts/live_end_to_end.py` with real Docker graph and private `OPENAI_API_KEY` before recording or claiming completed agent operation.
