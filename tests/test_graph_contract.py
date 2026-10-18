@@ -74,7 +74,7 @@ def test_bounded_llm_tool_loop_with_test_only_model_stub(monkeypatch):
         def create_investigation(self,*args):self.saved.append(('investigation',args))
         def record_attempt(self,*args):self.saved.append(('attempt',args))
         def recommendation(self,*args):self.saved.append(('recommendation',args))
-        def save_audit(self,*args):self.saved.append(('audit',args))
+        def save_audit(self,*args,**kwargs):self.saved.append(('audit',args,kwargs))
     graph=PersistableGraph(f)
     from schemaguard.sqlcheck import example_plans
     plans=example_plans('users.legacy_status',f)
