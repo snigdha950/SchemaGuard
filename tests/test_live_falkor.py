@@ -73,7 +73,7 @@ def test_real_graph_verification_receipt_queries_without_llm():
         assert g.confirm_recommendation(iid,'verified',aid)
         rows=GraphStore().query(Q.RECEIPT_RECORD,{'id':iid},read=True)
         assert len(rows)==1 and rows[0][12]==evidence_digest(ctx) and rows[0][13]==VERIFIER_VERSION
-        assert g.verified_recommendations(f,'users.legacy_status')>=1
+        assert g.verified_recommendations(f,'users.legacy_status')==0  # deterministic diagnostic must NEVER count as real LLM
         g.seed(f)
         assert len(GraphStore().query(Q.RECEIPT_RECORD,{'id':iid},read=True))==1
     finally:
