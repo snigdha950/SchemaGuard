@@ -49,8 +49,8 @@ WHERE i.config_version=$version AND i.target=$target
 RETURN i.id, a.id, a.status, a.actions_json, v.verified ORDER BY i.created_at DESC LIMIT 5"""
 
 # Auditable tool transcript is written only after the model actually calls bounded tools.
-SAVE_AUDIT = """MATCH (i:Investigation {id:$id}) SET i.audit_json=$audit_json, i.model=$model, i.completed_at=$completed_at, i.final_status=$status"""
-VERIFIED_AGENT_RECOMMENDATIONS = """MATCH (i:Investigation {config_version:$version, target:$target, state:'verified'})-[:HAS_ATTEMPT]->(a:Attempt)-[:HAS_VERIFICATION]->(v:Verification {verified:true}) WHERE i.attempt_id=a.id AND i.audit_json IS NOT NULL AND i.final_status='verified' AND i.evidence_digest=$evidence_digest AND i.verifier_version=$verifier_version RETURN count(DISTINCT i)"""
+SAVE_AUDIT = """MATCH (i:Investigation {id:$id}) SET i.audit_json=$audit_json, i.model=$model, i.completed_at=$completed_at, i.final_status=$status, i.agent_mode=$agent_mode"""
+VERIFIED_AGENT_RECOMMENDATIONS = """MATCH (i:Investigation {config_version:$version, target:$target, state:'verified'})-[:HAS_ATTEMPT]->(a:Attempt)-[:HAS_VERIFICATION]->(v:Verification {verified:true}) WHERE i.attempt_id=a.id AND i.audit_json IS NOT NULL AND i.final_status='verified' AND i.agent_mode='real-llm-agent' AND i.evidence_digest=$evidence_digest AND i.verifier_version=$verifier_version RETURN count(DISTINCT i)"""
 INVESTIGATION_AUDIT = """MATCH (i:Investigation {id:$id}) RETURN i.target, i.config_version, i.state, i.model, i.audit_json, i.recommendation, i.completed_at"""
 
 CONFIRM_RECOMMENDATION = """MATCH (i:Investigation {id:$id})-[:HAS_ATTEMPT]->(a:Attempt)-[:HAS_VERIFICATION]->(v:Verification)
