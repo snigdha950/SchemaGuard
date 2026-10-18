@@ -41,3 +41,7 @@
 ## New branch handoff
 
 Review the judge challenge, executable SQL failure ZIP, minimum bounded SQL comparison, and staleness-aware verification receipt. Offline tests and real SQLite execution are distinct from live FalkorDB+LLM acceptance. The latter is still required. Do not submit the old offline UI recording as the agent demo. A full live demonstration video URL remains missing until the team records and uploads it.
+
+
+## Final published source / pending model proof
+**Public repository:** https://github.com/snigdha950/SchemaGuard (merged changes). **Real FalkorDB CI:** https://github.com/snigdha950/SchemaGuard/actions/runs/39148602558 (passed). **Real-model run:** missing. **Genuine agent demo video:** missing. Run the new manually dispatched GitHub Actions workflow with repository secret OPENAI_API_KEY, inspect the outcome, record actual UI, and add a publicly accessible video before contest submission. Offline SQL successes must not be labelled as AI-generated.
