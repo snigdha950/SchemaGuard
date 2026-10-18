@@ -24,3 +24,7 @@ Recording requirements: actual running app on the team's machine, video and sour
 - The SQL replay is separate and intentionally scripted. Its count must never be called agent-verified.
 - Save a genuine desktop capture with actual app interaction using Xbox Game Bar (`Win + G`) or OBS. The authoring environment only captured offline diagnostic UI; no full live demo video exists yet.
 - Keep `.env`, API keys, credentials and any private GitHub data off-screen.
+
+
+## New judge-run sequence (only if live service and agent both pass)
+Run and show the actual LLM investigation. Export the receipt and show current status. Add a new active reader through the judge challenge, reobserve in real FalkorDB, show a new affected path, then check that the old receipt becomes STALE. Run the agent again to show the new plan. For an executable counterexample, click Download failing SQL repro, extract it, and run `python repro.py`. Treat deterministic comparison as a separate feature, not the model's action. Keep the main video around 2–3 minutes.
