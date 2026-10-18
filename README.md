@@ -179,5 +179,7 @@ The existing dashboard now supports a judge-controlled **synthetic consumer** wi
 **NOT YET PROVEN ON THIS ITERATION:** actual LLM execution and new receipt queries against live FalkorDB; run `python scripts/live_end_to_end.py` with real Docker graph and private `OPENAI_API_KEY` before recording or claiming completed agent operation.
 
 
-## Interface refresh (18 Oct)
-The existing workbench now uses restrained paper/ink/teal styling with a smaller introduction and the primary investigation panels ahead of the judge challenge. Its reference summary shows three **actually executed SQLite** cases: missed older consumers, a failed partial fix, and the complete passing manual reference. These are not credited to the LLM. See [DESIGN_NOTES.md](DESIGN_NOTES.md). The backend architecture, fixtures, graph requirements and verifier are unchanged.
+## Functional workbench interface (18 October)
+The main screen is now a compact migration-review workbench with navigation for change review, SQL verification, FalkorDB dependencies, and actual agent tool activity. SQL evidence is shown as three real SQLite reference scenarios, and the full SQL trace can be expanded. Judge challenge, reproduction, and receipt tools remain available under *Demo tools*, not in the core path.
+
+This is a UI-only workflow refinement. The real FalkorDB and model integration requirements remain unchanged. The presence of a passing manual reference plan is not proof that an LLM completed an investigation. For the checked status see [PROJECT_STATE.md](PROJECT_STATE.md) and [evidence/README.md](evidence/README.md).

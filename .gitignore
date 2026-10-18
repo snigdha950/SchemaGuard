@@ -9,3 +9,20 @@ __pycache__/
 *.log
 run_state/
 .DS_Store
+
+# Local credentials and generated artifacts
+.env.*
+!.env.example
+*.zip
+*.webm
+*.mp4
+*.mov
+*.png
+*.jpg
+*.jpeg
+*.webp
+node_modules/
+dist/
+build/
+.ruff_cache/
+.mypy_cache/

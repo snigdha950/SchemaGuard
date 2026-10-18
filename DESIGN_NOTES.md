@@ -1,20 +1,17 @@
-# Interface direction
+# Interface decisions
 
-SchemaGuard is an engineering workbench, not a marketing page.
+SchemaGuard should read like a developer migration-review tool, not a landing page.
 
-## Design choices
-- Warm paper (#f5f4f0), deep ink (#253437), muted green (#315e55). Amber and brick appear only for genuine failures or unavailable connections.
-- A single, quiet serif headline gives it some personality. The rest uses system fonts and small practical labels. No stock pictures, glowing gradients, oversized hero graphics, invented metrics or motion.
-- Keep the proposed change, the three actually executed SQL outcomes, and live graph evidence above the advanced challenge/receipt tools.
-- Keep the four source-derived counters distinct: observed graph reads, affected deployed consumers, passed deterministic SQL references, and persisted real-agent verifications.
-- A successful deterministic reference replay must not turn the overall agent result green. A reset or bounded comparison is not a model verification.
-- An unavailable graph stays visibly unavailable. No substitute topology is drawn.
-- Inputs and buttons remain keyboard-focusable; at small widths the layout stacks rather than relying on a separate mobile frontend.
+- Compact sidebar: change review, SQL verification, dependency graph, agent activity, and optional demo tools.
+- Primary work area: choose the column, run the investigation, compare actual SQLite results and preserved output contracts.
+- Graph topology and highlighted paths must come only from FalkorDB; when offline the map says so instead of drawing imaginary connections.
+- Actual LLM activity remains separate from deterministic SQL comparison.
+- Dark charcoal navigation, light canvas and restrained violet accents; clean system fonts and minimal decoration.
+- Small-screen layout stacks panels and keeps buttons accessible. Keyboard focus styling and reduced-motion settings are supported.
+- UI changes do not relax SQL verification, expand supported migrations or establish model access.
 
-## Product improvements before submission
-1. **P0: Run real model acceptance.** A passing SQLite comparison and passing FalkorDB integration prove neither model tool selection nor a persisted agent recommendation.
-2. **P0: Record a real browser demonstration.** Show one complete agent investigation and a judge-induced stale receipt. Do not use screenshot mockups as runtime proof.
-3. **P1: Improve the clarity of specific SQL errors.** Preserve raw SQLite error text in export, but show the affected consumer and failing query prominently.
-4. **Deferred:** arbitrary repository discovery, user accounts, general SQL migrations and unsupported production claims.
+## Verification and remaining work
 
-This change preserves the original HTML/JS controller IDs, backend contracts, graph model, fixtures and verifier. It is an interface refinement, not a project reboot.
+The live FalkorDB integration has a passing GitHub Actions run, but actual LLM tool calls and an agent-generated verified recommendation still require an acceptance run with a private API key. An authentic recorded demonstration is also outstanding. Never label the reference SQL pass as an agent result.
+
+The published repo intentionally keeps source, fixture data, integration tests, Cypher queries, licence, documentation, and small human-readable verification records. Stale offline screenshots and WebM recordings are **not tracked**; their only role is historical diagnostic context in earlier downloadable ZIPs. No customer data, credentials or production migrations belong in this repository.
