@@ -177,3 +177,7 @@ The existing dashboard now supports a judge-controlled **synthetic consumer** wi
 **Agent:** may call the `compare_bounded_plans` tool, but must separately choose and `test_plan` then `record_recommendation`. A two-phase persisted-audit check prevents an unfinished graph write from being counted as an agent success. `GET /api/receipt/<investigation_id>` refreshes evidence from real FalkorDB and withdraws current VERIFIED status on graph/fixture/verifier changes. Historical investigations remain stored when reseeding the project-scoped graph.
 
 **NOT YET PROVEN ON THIS ITERATION:** actual LLM execution and new receipt queries against live FalkorDB; run `python scripts/live_end_to_end.py` with real Docker graph and private `OPENAI_API_KEY` before recording or claiming completed agent operation.
+
+
+## Interface refresh (18 Oct)
+The existing workbench now uses restrained paper/ink/teal styling with a smaller introduction and the primary investigation panels ahead of the judge challenge. Its reference summary shows three **actually executed SQLite** cases: missed older consumers, a failed partial fix, and the complete passing manual reference. These are not credited to the LLM. See [DESIGN_NOTES.md](DESIGN_NOTES.md). The backend architecture, fixtures, graph requirements and verifier are unchanged.
