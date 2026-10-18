@@ -45,3 +45,9 @@ Open http://127.0.0.1:8000. Keep the terminal running. Show the graph, replay th
 The acceptance script restores the seed when finished, clearing its temporary graph records. Run a new investigation in the UI for your recording. The JSON acceptance evidence remains on disk.
 
 Use `DEMO_SCRIPT.md` for the story. Publish the source with `.env` excluded, include the working video and complete setup instructions, and complete the submission. A deployed site is optional when full local setup is provided.
+
+## No local Docker? Run acceptance securely in GitHub Actions
+
+The feature branch contains a **manual-only** workflow, `Live graph and real model acceptance (manual only)`. It starts real FalkorDB on a GitHub runner and runs `scripts/live_end_to_end.py` with real tool-calling model access. This workflow **has not run a model yet**.
+
+To run it without pasting an API key into chat: open repository **Settings → Secrets and variables → Actions → New repository secret**, name it **OPENAI_API_KEY**, and save a valid permitted Platform API key. Open **Actions → Live graph and real model acceptance (manual only) → Run workflow**, choose branch **evidence-challenge-2026-10-18**, leave the default model or select one your account supports, then run. Inspect actual logs and the `schemaguard-live-evidence` artifact. The full walkthrough/video still needs a genuine running dashboard. Remove the repository secret afterward if no longer needed. Set the key only in GitHub Actions secrets or local `.env`, never in committed source or chat.
