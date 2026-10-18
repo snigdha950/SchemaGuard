@@ -89,3 +89,12 @@
 - Corrected three misleading status treatments: completing deterministic SQL comparison, bounded candidate comparison, or demo reset no longer sets the overall notice to VERIFIED. An agent result remains separate.
 - Local checks: 35 passed, 2 opt-in graph tests skipped; `node --check schemaguard/static/app.js` passed. Headless Chromium rendered desktop and phone layouts without JavaScript errors or 390px body overflow, using real FastAPI TestClient JSON injected because direct browser localhost navigation is administratively blocked in this environment.
 - Screenshots are visual tests, not working FalkorDB/LLM recording. Live model execution and authentic browser demo remain pending.
+
+
+## Latest published checkpoint | 18 October 2026
+
+- The functional migration workbench is merged into `main` by [PR #3](https://github.com/snigdha950/SchemaGuard/pull/3), commit `039b393aa6fbf33973f529d49c417ae0762b8f24`. It has compact developer navigation, a three-row SQL impact table, collapsible detailed SQL traces and optional demo tools. No backend graph/agent/verifier rewrite.
+- GitHub **main-branch offline CI** passed: [run 39152774431](https://github.com/snigdha950/SchemaGuard/actions/runs/39152774431). Test output: **39 passed, 2 live-only tests skipped, 1 warning**. CI includes `node --check` of the frontend JavaScript.
+- GitHub **main-branch real FalkorDB integration CI** passed: [run 39152774429](https://github.com/snigdha950/SchemaGuard/actions/runs/39152774429). This is not a live-model proof.
+- Repository audit: 49 tracked files, no tracked .env, zip files, caches, PNG screenshots, recordings or binary environments. Small historical JSON/text verification evidence is intentionally retained in `evidence/`.
+- **Unresolved P0:** complete real LLM tool-calling and persisted recommendation evidence, then record/authenticate a real working video and submit. Do not imply the deterministic SQL plan is LLM-generated.
