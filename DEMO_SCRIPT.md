@@ -28,3 +28,7 @@ Recording requirements: actual running app on the team's machine, video and sour
 
 ## New judge-run sequence (only if live service and agent both pass)
 Run and show the actual LLM investigation. Export the receipt and show current status. Add a new active reader through the judge challenge, reobserve in real FalkorDB, show a new affected path, then check that the old receipt becomes STALE. Run the agent again to show the new plan. For an executable counterexample, click Download failing SQL repro, extract it, and run `python repro.py`. Treat deterministic comparison as a separate feature, not the model's action. Keep the main video around 2–3 minutes.
+
+
+## Interface reminder
+From the landing workbench, first show the SQL comparison summary labelled **reference cases**, then the FalkorDB dependency map, then actual model tool calls and the recommendation receipt. The judge challenge and downloadable SQL counterexample are lower on the page. Do not call the green passing *manual reference* an agent outcome or present a design screenshot as proof of a live agent session.
