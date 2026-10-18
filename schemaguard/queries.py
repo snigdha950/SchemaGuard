@@ -3,7 +3,7 @@
 The SDK's graph.query(text, params={...}) binds $parameters (no user-written Cypher).
 """
 PING = "RETURN 1 AS ok"
-CLEAR_SCOPED_GRAPH = "MATCH (n) DETACH DELETE n"  # ONLY in SCHEMAGUARD's explicitly named demo graph; destructive reset.
+CLEAR_SCOPED_GRAPH = """MATCH (n) WHERE n:Fixture OR n:Table OR n:Column OR n:Query OR n:ConsumerVersion OR n:Deployment OR n:Observation DETACH DELETE n"""  # ONLY in SCHEMAGUARD's explicitly named demo graph; destructive reset.
 META = "MERGE (m:Fixture {id:'demo'}) SET m.version=$version, m.fixture_name=$fixture_name"
 SEED_TABLE = "MERGE (t:Table {id:'users'}) SET t.name='users'"
 SEED_COLUMN = "MATCH (t:Table {id:'users'}) MERGE (c:Column {fqname:$fqname}) SET c.name=$name MERGE (t)-[:HAS_COLUMN]->(c)"
@@ -37,7 +37,7 @@ ORDER BY v.id"""
 READ_EVIDENCE = """MATCH (d:Deployment {active:true})-[:RUNS]->(v:ConsumerVersion)-[:EXECUTES]->(q:Query)
 OPTIONAL MATCH (o:Observation {kind:'read', config_version:$version})-[:SUPPORTS]->(q)
 RETURN v.id, o.column, o.id ORDER BY v.id, o.column"""
-CREATE_INVESTIGATION = """MERGE (i:Investigation {id:$id}) SET i.target=$target, i.config_version=$version, i.state=$state, i.created_at=$created_at"""
+CREATE_INVESTIGATION = """MERGE (i:Investigation {id:$id}) SET i.target=$target, i.config_version=$version, i.state=$state, i.created_at=$created_at, i.evidence_digest=$evidence_digest, i.verifier_version=$verifier_version"""
 CREATE_ATTEMPT = """MATCH (i:Investigation {id:$investigation_id})
 MERGE (a:Attempt {id:$attempt_id}) SET a.actions_json=$actions_json, a.fixture_version=$version, a.status=$status
 MERGE (i)-[:HAS_ATTEMPT]->(a)
@@ -50,5 +50,11 @@ RETURN i.id, a.id, a.status, a.actions_json, v.verified ORDER BY i.created_at DE
 
 # Auditable tool transcript is written only after the model actually calls bounded tools.
 SAVE_AUDIT = """MATCH (i:Investigation {id:$id}) SET i.audit_json=$audit_json, i.model=$model, i.completed_at=$completed_at, i.final_status=$status"""
-VERIFIED_AGENT_RECOMMENDATIONS = """MATCH (i:Investigation {config_version:$version, target:$target, state:'verified'})-[:HAS_ATTEMPT]->(a:Attempt)-[:HAS_VERIFICATION]->(v:Verification {verified:true}) WHERE i.attempt_id=a.id AND i.audit_json IS NOT NULL RETURN count(DISTINCT i)"""
+VERIFIED_AGENT_RECOMMENDATIONS = """MATCH (i:Investigation {config_version:$version, target:$target, state:'verified'})-[:HAS_ATTEMPT]->(a:Attempt)-[:HAS_VERIFICATION]->(v:Verification {verified:true}) WHERE i.attempt_id=a.id AND i.audit_json IS NOT NULL AND i.final_status='verified' RETURN count(DISTINCT i)"""
 INVESTIGATION_AUDIT = """MATCH (i:Investigation {id:$id}) RETURN i.target, i.config_version, i.state, i.model, i.audit_json, i.recommendation, i.completed_at"""
+
+CONFIRM_RECOMMENDATION = """MATCH (i:Investigation {id:$id})-[:HAS_ATTEMPT]->(a:Attempt)-[:HAS_VERIFICATION]->(v:Verification)
+WHERE a.id=i.attempt_id RETURN i.state, i.final_status, a.id, v.verified"""
+RECEIPT_RECORD = """MATCH (i:Investigation {id:$id})-[:HAS_ATTEMPT]->(a:Attempt)-[:HAS_VERIFICATION]->(v:Verification)
+WHERE a.id=i.attempt_id RETURN i.target, i.config_version, i.state, i.final_status, i.model, i.audit_json,
+       i.recommendation, a.id, a.actions_json, v.result_json, v.verified, i.completed_at, i.evidence_digest, i.verifier_version"""
