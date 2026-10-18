@@ -67,3 +67,10 @@
 - FalkorDB still unavailable (no Docker/SDK, 6379 refused, PyPI inaccessible); `OPENAI_API_KEY` absent. Opt-in live SDK test skipped and real LLM agent call not performed. No public GitHub repository, no live deployment and no complete submission video.
 - **For another session**: existing code is in `/mnt/data/SchemaGuard` (not only the old documentation-only `/mnt/data/schemaguard` directory). Latest ZIP is `/mnt/data/SchemaGuard_GraphHacks_2026_v2.zip`; the original old ZIP path has also been updated to current package. Next exact actions on Windows: `docker compose up -d`, install requirements, set local `.env` key, `python -m schemaguard.cli seed`, `check`, opt-in live test, `python scripts/live_end_to_end.py`, serve and record actual live agent UI, publish repository and submit.
 - Do NOT claim live FalkorDB/model/agent-verified count in final demo until all those steps actually pass. When a future session receives new real evidence, update README/verification and ZIP, but do not rebuild the project.
+
+
+## 10:30 PM onward, 18 Oct continuation
+- Public repository work is on branch `evidence-challenge-2026-10-18` pending PR review; preserve unrelated main-branch work.
+- Added a judge-controlled synthetic consumer, real-graph reseed guard, bounded exhaustive SQL candidate search, independent failure repro bundle, and staleness-aware persisted receipt.
+- In local provided ZIP workspace, `python -m pytest -q`: **35 passed, 1 skipped** and JavaScript syntax checked. The live FalkorDB SDK, Docker, and OPENAI_API_KEY are missing from this runtime. The earlier 31-test real-graph result is historical evidence from a different environment.
+- Still required: real FalkorDB run of newly changed queries, real model tool cycle, video capture, teammate review, portal submission. No invented live success.
