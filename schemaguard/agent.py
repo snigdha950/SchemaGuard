@@ -10,12 +10,15 @@ import uuid
 from .fixtures import version_of
 from .sqlcheck import execute_plan
 from .graph import GraphEvidenceIncomplete
+from .challenges import compare_bounded_plans, evidence_digest, VERIFIER_VERSION
 
 TOOLS = [
     {"type":"function", "function":{"name":"inspect_change", "description":"Validate allowed column removal and inspect graph evidence coverage and paths. Must run first.",
        "parameters":{"type":"object", "properties":{"target":{"type":"string"}},"required":["target"],"additionalProperties":False}}},
     {"type":"function", "function":{"name":"find_affected_consumers", "description":"Retrieve actual active paths and observed reads from FalkorDB, not newest-version guesses.",
        "parameters":{"type":"object", "properties":{"target":{"type":"string"}},"required":["target"],"additionalProperties":False}}},
+    {"type":"function", "function":{"name":"compare_bounded_plans", "description":"Use real SQLite tests to enumerate projection repair subsets and find the smallest passing plan within this bounded set. Not an agent-selected plan.",
+       "parameters":{"type":"object","properties":{"target":{"type":"string"}},"required":["target"],"additionalProperties":False}}},
     {"type":"function", "function":{"name":"test_plan", "description":"Try allowed operations in fresh SQLite. Returns detailed actual SQL errors and contract checks. Maximum 3 attempts.",
        "parameters":{"type":"object", "properties":{"actions":{"type":"array", "maxItems":8, "items":{"type":"object","properties":{"type":{"type":"string","enum":["update_projection","drop_column"]},"consumer_id":{"type":"string"},"remove_column":{"type":"string"},"target":{"type":"string"}},"required":["type"],"additionalProperties":False}}},"required":["actions"],"additionalProperties":False}}},
     {"type":"function", "function":{"name":"record_recommendation", "description":"Persist evidence-linked recommendation, with a previously tested attempt_id and bounded rationale; use verified only if deterministic verifier actually passed.",
@@ -28,7 +31,7 @@ A recent app version may be safe while older active versions/workers are not. Al
 Choose a valid update_projection per affected consumer whose required_output does not depend on target column, THEN drop_column.
 Required outputs must remain identical. Never disable consumers, change their required_output, weaken assertions, or remove rows.
 If required output includes target, return unresolved: no allowed repair. If observations missing, return blocked, do not infer safe.
-Make 1-3 appropriate test_plan calls. Only call record_recommendation with a real returned attempt_id.
+Use compare_bounded_plans when comparing candidates, then choose and test a specific plan yourself. Make 1-3 appropriate test_plan calls. Only call record_recommendation with a real returned attempt_id.
 Name the observed consumers, affected paths, actual verification outcome, and remaining limitation. Do not claim production safety.
 The plan is JSON allowed actions; no raw SQL/shell. Do not use external tools or reveal reasoning chain.
 """
@@ -54,7 +57,7 @@ def run_agent(f:dict, target:str, graph_store) -> dict:
     except Exception as exc:
         raise AgentBlocked(f"LLM client unavailable: {type(exc).__name__}") from exc
     iid = "inv:"+uuid.uuid4().hex[:12]
-    graph_store.create_investigation(iid,target,version_of(f))
+    graph_store.create_investigation(iid,target,version_of(f),evidence_digest(context),VERIFIER_VERSION)
     attempts={}
     events=[]
     model_name=os.getenv("OPENAI_MODEL","gpt-4.1-mini")
@@ -64,7 +67,7 @@ def run_agent(f:dict, target:str, graph_store) -> dict:
     retrieved=False
     inspected=False
     recommendation=None
-    for step in range(8):
+    for step in range(10):
         try:
             completion=client.chat.completions.create(model=model_name, messages=messages,
                                      tools=TOOLS, tool_choice="auto", temperature=0, max_completion_tokens=900)
@@ -105,11 +108,21 @@ def run_agent(f:dict, target:str, graph_store) -> dict:
                     requirements={c["id"]:c["required_output"] for c in f["consumers"] if c["active"]}
                     output={"affected":fresh["affected"],"required_output_by_consumer":requirements,
                             "coverage":fresh["coverage"], "graph_path_format":"Deployment RUNS ConsumerVersion EXECUTES Query READS Column; Observation SUPPORTS Query"}
+                elif name=="compare_bounded_plans":
+                    if not retrieved: raise ValueError("find_affected_consumers required first")
+                    if args.get("target") != target: raise ValueError("Tool target mismatch")
+                    current=graph_store.context(f,target)
+                    if current["state"]!="complete" or evidence_digest(current)!=evidence_digest(context):
+                        raise GraphEvidenceIncomplete("Graph evidence changed before candidate comparison")
+                    comparison=compare_bounded_plans(f,target)
+                    output={"scope":comparison["scope"],"candidates_tested":comparison["candidates_tested"],
+                            "minimum_operations":comparison["minimum_operations"],"smallest_passing_plan":comparison["smallest_passing_plan"],
+                            "alternatives":[{"operations":c["operations"],"verified":c["verified"],"failed_consumers":c["failed_consumers"]} for c in comparison["candidates"]]}
                 elif name=="test_plan":
                     if not retrieved: raise ValueError("find_affected_consumers required before tests")
                     # Dependencies must still be connected/current at the instant of testing.
                     current=graph_store.context(f,target)
-                    if current["state"]!="complete" or current["affected"] != context["affected"]:
+                    if current["state"]!="complete" or evidence_digest(current) != evidence_digest(context):
                         raise GraphEvidenceIncomplete("Dependency graph changed after inspection; reseed/reinvestigate")
                     if len(attempts)>=3: raise ValueError("Three-attempt limit")
                     actions=args.get("actions")
@@ -123,13 +136,14 @@ def run_agent(f:dict, target:str, graph_store) -> dict:
                            "unresolved_required_outputs":result["unresolved_required_outputs"],"schema_after":result["schema_after"]}
                 elif name=="record_recommendation":
                     current=graph_store.context(f,target)
-                    if current["state"]!="complete" or current["affected"] != context["affected"]:
+                    if current["state"]!="complete" or evidence_digest(current) != evidence_digest(context):
                         raise GraphEvidenceIncomplete("Graph changed before recommendation; new investigation required")
                     aid=args.get("attempt_id")
                     if aid not in attempts: raise ValueError("Must reference existing test attempt_id")
                     comment=str(args.get("recommendation",""))[:1400]
                     last=attempts[aid]
                     state=("verified" if last["verified"] else "unresolved" if last["unresolved_required_outputs"] else "unsafe")
+                    graph_store.save_audit(iid, model_name, "pending_commit", events)
                     graph_store.recommendation(iid,state,aid,comment)
                     recommendation={"attempt_id":aid,"text":comment,"verified":last["verified"],
                                     "status":state,"actions":last["actions"]}
@@ -147,8 +161,11 @@ def run_agent(f:dict, target:str, graph_store) -> dict:
             break
     final_status = recommendation["status"] if recommendation else "incomplete"
     graph_store.save_audit(iid, model_name, final_status, events)
+    if recommendation and not graph_store.confirm_recommendation(iid,final_status,recommendation["attempt_id"]):
+        raise GraphEvidenceIncomplete("Persisted recommendation not readable; no verified result")
     return {"investigation_id":iid,"status": final_status,
             "mode":"real-llm-agent","model":model_name,"target":target,"context":context,
+            "graph_evidence_digest":evidence_digest(context),"verifier_version":VERIFIER_VERSION,
             "attempts":[dict(attempt_id=k, **v) for k,v in attempts.items()],
             "activity":events,"recommendation":recommendation,
             "limitation":None if recommendation else "Model did not record a tested recommendation within tool budget"}
