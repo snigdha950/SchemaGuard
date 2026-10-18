@@ -74,3 +74,11 @@
 - Added a judge-controlled synthetic consumer, real-graph reseed guard, bounded exhaustive SQL candidate search, independent failure repro bundle, and staleness-aware persisted receipt.
 - In local provided ZIP workspace, `python -m pytest -q`: **35 passed, 1 skipped** and JavaScript syntax checked. The live FalkorDB SDK, Docker, and OPENAI_API_KEY are missing from this runtime. The earlier 31-test real-graph result is historical evidence from a different environment.
 - Still required: real FalkorDB run of newly changed queries, real model tool cycle, video capture, teammate review, portal submission. No invented live success.
+
+
+## 18 October, 10:45 PM IST: final public integration checkpoint
+- PR #1 merged into main: https://github.com/snigdha950/SchemaGuard/pull/1 ; merge commit `2c5459a8369b616298d1681cf802891a2cf91461`.
+- **Real FalkorDB Docker service CI on the new source passed:** https://github.com/snigdha950/SchemaGuard/actions/runs/39148602558 . The new live receipt regression and previous real Cypher graph mutation test passed. This is graph and SQL integration, **not a live LLM**.
+- GitHub offline CI also passed on the branch: https://github.com/snigdha950/SchemaGuard/actions/runs/39148605568 . Local executable check: 35 passed, 2 skipped (2 graph tests skipped locally without Docker).
+- Downloadable source ZIP includes source, tests and instructions; full working-agent video remains unrecorded. Manual Actions workflow `Live graph and real model acceptance (manual only)` exists on main but has not run; it requires private repository Actions secret `OPENAI_API_KEY` and an approved tool-calling model.
+- Next action before the demo: configure that secret, launch manual workflow, inspect real evidence artifact, open localhost interface to record authentic agent/tool graph interaction. Do not claim a working LLM until that run succeeds.
