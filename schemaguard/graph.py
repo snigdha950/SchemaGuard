@@ -170,14 +170,14 @@ class GraphStore:
         self.query(Q.SAVE_RECOMMENDATION,{"id":investigation_id, "state":state,
             "attempt_id":attempt_id, "recommendation":recommendation[:1400]})
 
-    def save_audit(self, investigation_id: str, model: str, status: str, events: list[dict]):
+    def save_audit(self, investigation_id: str, model: str, status: str, events: list[dict], mode: str = "diagnostic"):
         # Never store credentials, full model prompts or raw secrets. Each event is
         # an actual bounded tool call/result, limited to the synthetic fixture.
         payload = json.dumps(events, default=str)
         if len(payload)>120000:
             raise GraphEvidenceIncomplete("Tool audit too large to store without losing evidence")
         self.query(Q.SAVE_AUDIT, {"id": investigation_id, "model": model, "status": status,
-            "audit_json": payload, "completed_at": datetime.now(timezone.utc).isoformat()})
+            "audit_json": payload, "completed_at": datetime.now(timezone.utc).isoformat(), "agent_mode":mode})
 
     def confirm_recommendation(self, investigation_id: str, state: str, attempt_id: str) -> bool:
         rows=self.query(Q.CONFIRM_RECOMMENDATION,{"id":investigation_id},read=True)
