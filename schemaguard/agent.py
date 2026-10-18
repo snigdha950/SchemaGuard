@@ -74,7 +74,7 @@ def run_agent(f:dict, target:str, graph_store) -> dict:
         except Exception as exc:
             events.append({"step":step+1, "tool":"model_request", "ok":False,
                            "result":{"error_type":type(exc).__name__}})
-            graph_store.save_audit(iid, model_name, "blocked", events)
+            graph_store.save_audit(iid, model_name, "blocked", events,mode="real-llm-agent")
             raise AgentBlocked(f"Model request failed ({type(exc).__name__}). Check permitted model/key/network; no LLM success claimed.") from exc
         reply=completion.choices[0].message
         tool_calls=reply.tool_calls or []
@@ -143,7 +143,7 @@ def run_agent(f:dict, target:str, graph_store) -> dict:
                     comment=str(args.get("recommendation",""))[:1400]
                     last=attempts[aid]
                     state=("verified" if last["verified"] else "unresolved" if last["unresolved_required_outputs"] else "unsafe")
-                    graph_store.save_audit(iid, model_name, "pending_commit", events)
+                    graph_store.save_audit(iid, model_name, "pending_commit", events,mode="real-llm-agent")
                     graph_store.recommendation(iid,state,aid,comment)
                     recommendation={"attempt_id":aid,"text":comment,"verified":last["verified"],
                                     "status":state,"actions":last["actions"]}
@@ -160,7 +160,7 @@ def run_agent(f:dict, target:str, graph_store) -> dict:
         if recommendation:
             break
     final_status = recommendation["status"] if recommendation else "incomplete"
-    graph_store.save_audit(iid, model_name, final_status, events)
+    graph_store.save_audit(iid, model_name, final_status, events,mode="real-llm-agent")
     if recommendation and not graph_store.confirm_recommendation(iid,final_status,recommendation["attempt_id"]):
         raise GraphEvidenceIncomplete("Persisted recommendation not readable; no verified result")
     return {"investigation_id":iid,"status": final_status,
