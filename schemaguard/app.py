@@ -175,7 +175,7 @@ def create_challenge(payload:ChallengeRequest):
         ctx=store.context(updated,'users.legacy_status')
         if ctx['state']!='complete':raise GraphEvidenceIncomplete('Reobserved graph incomplete')
         dest=ROOT/'fixtures'/'demo.json';temp=dest.with_suffix('.tmp')
-        temp.write_text(json.dumps(updated,indent=2)+'\\n',encoding='utf8');temp.replace(dest)
+        temp.write_text(json.dumps(updated,indent=2)+'\n',encoding='utf8');temp.replace(dest)
         return {'state':'challenge_reobserved','fixture_version':version_of(updated),'source':'real FalkorDB + SQLite authorizer','added_consumer':payload.consumer_id,'seed':seeded,'affected_from_graph':ctx['affected'],'graph':ctx['graph']}
     except ValueError as exc:raise HTTPException(422,str(exc)) from exc
     except (GraphUnavailable,GraphEvidenceIncomplete,ImportError) as exc:raise HTTPException(503,'Challenge not committed: '+str(exc)) from exc
