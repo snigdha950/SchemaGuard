@@ -17,3 +17,7 @@ Hackathon policy: AI coding is permitted with disclosure, but submissions entire
 - Who personally reviewed `GraphStore.context` and challenged a missing-observation case: **not yet supplied**.
 - Who ran the real Docker/FalkorDB and model acceptance path and recorded its errors/results: **not yet supplied**.
 - Who filmed and submitted to the portal: **not yet supplied**.
+
+
+## Late 18 October AI assistance
+ChatGPT authored a judge-controlled synthetic worker challenge, bounded SQL plan enumeration, portable SQL repro, receipt freshness logic, fail-closed persistence changes, UI controls, tests, and comparative documentation. None of these new contributions are attributed to human teammates without their own demonstrated review or test work. Live LLM workflow has not yet been verified in this chat runtime.
