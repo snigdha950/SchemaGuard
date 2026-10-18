@@ -25,3 +25,7 @@ ChatGPT authored a judge-controlled synthetic worker challenge, bounded SQL plan
 
 ## Late interface work disclosure
 ChatGPT revised the existing dashboard layout, colors, terminology, dynamic deterministic SQL summary, and notice status semantics. It generated visual test screenshots in Chromium from existing frontend assets and genuine backend TestClient responses. This is not presented as a live FalkorDB-agent browser session; participant contributions remain unclaimed until performed.
+
+
+## Published functional workbench and repository cleanup
+ChatGPT adapted the existing SchemaGuard interface to a compact migration-review workflow, added source/API UI regressions, updated project documents and Git exclusion rules, and published changes via PR #3. Main-branch offline and real-FalkorDB integration checks are linked from PROJECT_STATE.md. No live-model success, team testing, authentic demo recording, or contest submission is claimed by these changes.
