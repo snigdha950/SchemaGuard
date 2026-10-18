@@ -11,5 +11,7 @@ jobs:
         with:
           python-version: '3.13'
       - run: python -m pip install -r requirements.txt
+      - name: Verify frontend JavaScript syntax
+        run: node --check schemaguard/static/app.js
       - name: Deterministic SQL and mock-only graph unit tests (NOT real FalkorDB/LLM)
         run: python -m pytest -q
