@@ -82,3 +82,10 @@
 - GitHub offline CI also passed on the branch: https://github.com/snigdha950/SchemaGuard/actions/runs/39148605568 . Local executable check: 35 passed, 2 skipped (2 graph tests skipped locally without Docker).
 - Downloadable source ZIP includes source, tests and instructions; full working-agent video remains unrecorded. Manual Actions workflow `Live graph and real model acceptance (manual only)` exists on main but has not run; it requires private repository Actions secret `OPENAI_API_KEY` and an approved tool-calling model.
 - Next action before the demo: configure that secret, launch manual workflow, inspect real evidence artifact, open localhost interface to record authentic agent/tool graph interaction. Do not claim a working LLM until that run succeeds.
+
+
+## 18 October, 11:05 PM IST: interface revision
+- Existing FastAPI/HTML/JavaScript interface was refined rather than rebuilt. New warm off-white background, ink typography, muted green actions, quieter cards, readable diagnostic comparison, and judge challenge moved below graph and SQL findings.
+- Corrected three misleading status treatments: completing deterministic SQL comparison, bounded candidate comparison, or demo reset no longer sets the overall notice to VERIFIED. An agent result remains separate.
+- Local checks: 35 passed, 2 opt-in graph tests skipped; `node --check schemaguard/static/app.js` passed. Headless Chromium rendered desktop and phone layouts without JavaScript errors or 390px body overflow, using real FastAPI TestClient JSON injected because direct browser localhost navigation is administratively blocked in this environment.
+- Screenshots are visual tests, not working FalkorDB/LLM recording. Live model execution and authentic browser demo remain pending.
