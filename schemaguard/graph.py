@@ -148,9 +148,10 @@ class GraphStore:
                             "read_edges":len(graph_reads),"observed_reads":len(observed_reads),"issues":issues},
                 "state":"incomplete" if issues else "complete"}
 
-    def create_investigation(self, investigation_id: str, target: str, version: str):
+    def create_investigation(self, investigation_id: str, target: str, version: str, evidence_digest: str = "", verifier_version: str = ""):
         self.query(Q.CREATE_INVESTIGATION, {"id":investigation_id,"target":target,"version":version,
-            "state":"investigating","created_at":datetime.now(timezone.utc).isoformat()})
+            "state":"investigating","created_at":datetime.now(timezone.utc).isoformat(),
+            "evidence_digest":evidence_digest,"verifier_version":verifier_version})
 
     def record_attempt(self, investigation_id: str, attempt_id: str, result: dict):
         # Limit persisted results (actual errors/checks/paths, no secrets or raw user data).
@@ -177,6 +178,10 @@ class GraphStore:
             raise GraphEvidenceIncomplete("Tool audit too large to store without losing evidence")
         self.query(Q.SAVE_AUDIT, {"id": investigation_id, "model": model, "status": status,
             "audit_json": payload, "completed_at": datetime.now(timezone.utc).isoformat()})
+
+    def confirm_recommendation(self, investigation_id: str, state: str, attempt_id: str) -> bool:
+        rows=self.query(Q.CONFIRM_RECOMMENDATION,{"id":investigation_id},read=True)
+        return len(rows)==1 and rows[0][0]==state and rows[0][1]==state and rows[0][2]==attempt_id and bool(rows[0][3])
 
     def verified_recommendations(self, fixture: dict, target: str) -> int:
         # Fail closed when version/corroboration cannot be checked.
