@@ -1,0 +1,49 @@
+name: Live graph and real model acceptance (manual only)
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: Permitted tool-calling model to use
+        required: true
+        default: gpt-4.1-mini
+jobs:
+  live-agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    services:
+      falkordb:
+        image: falkordb/falkordb:latest
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 15
+    env:
+      FALKORDB_HOST: "127.0.0.1"
+      FALKORDB_PORT: "6379"
+      FALKORDB_GRAPH: "schemaguard_live_ci"
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_MODEL: ${{ inputs.model }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -r requirements.txt
+      - name: Require server-side private key
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "BLOCKED: configure repository Actions secret OPENAI_API_KEY first"; exit 2
+          fi
+      - name: Actual model tool calls, FalkorDB traversal, independent SQLite, audited result
+        run: python scripts/live_end_to_end.py
+      - name: Save only generated synthetic investigation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: schemaguard-live-evidence
+          path: |
+            evidence/live-falkordb-agent-results.json
+            evidence/live-acceptance-blocked.json
+          if-no-files-found: ignore
