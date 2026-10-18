@@ -21,3 +21,7 @@ Hackathon policy: AI coding is permitted with disclosure, but submissions entire
 
 ## Late 18 October AI assistance
 ChatGPT authored a judge-controlled synthetic worker challenge, bounded SQL plan enumeration, portable SQL repro, receipt freshness logic, fail-closed persistence changes, UI controls, tests, and comparative documentation. None of these new contributions are attributed to human teammates without their own demonstrated review or test work. Live LLM workflow has not yet been verified in this chat runtime.
+
+
+## Late interface work disclosure
+ChatGPT revised the existing dashboard layout, colors, terminology, dynamic deterministic SQL summary, and notice status semantics. It generated visual test screenshots in Chromium from existing frontend assets and genuine backend TestClient responses. This is not presented as a live FalkorDB-agent browser session; participant contributions remain unclaimed until performed.
