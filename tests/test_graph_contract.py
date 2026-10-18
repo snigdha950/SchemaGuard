@@ -74,7 +74,7 @@ def test_bounded_llm_tool_loop_with_test_only_model_stub(monkeypatch):
         def create_investigation(self,*args):self.saved.append(('investigation',args))
         def record_attempt(self,*args):self.saved.append(('attempt',args))
         def recommendation(self,*args):self.saved.append(('recommendation',args))
-        def save_audit(self,*args):self.saved.append(('audit',args))
+        def save_audit(self,*args,**kwargs):self.saved.append(('audit',args,kwargs))
     graph=PersistableGraph(f)
     from schemaguard.sqlcheck import example_plans
     plans=example_plans('users.legacy_status',f)
@@ -104,6 +104,7 @@ def test_bounded_llm_tool_loop_with_test_only_model_stub(monkeypatch):
     store.record_attempt=graph.record_attempt
     store.recommendation=graph.recommendation
     store.save_audit=graph.save_audit
+    store.confirm_recommendation=lambda *args: True # unit-only fake
     result=run_agent(f,'users.legacy_status',store)
     assert result['mode']=='real-llm-agent' # mode name is code-path label, stub is test-only
     assert result['status']=='verified'

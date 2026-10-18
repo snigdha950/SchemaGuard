@@ -36,3 +36,8 @@
 **Memory track:** Not claimed; persisted attempts alone do not establish an independently demonstrated memory-and-coordination workflow.
 
 **Rules:** https://www.wemakedevs.org/hackathons/falkordb/rules
+
+
+## New branch handoff
+
+Review the judge challenge, executable SQL failure ZIP, minimum bounded SQL comparison, and staleness-aware verification receipt. Offline tests and real SQLite execution are distinct from live FalkorDB+LLM acceptance. The latter is still required. Do not submit the old offline UI recording as the agent demo. A full live demonstration video URL remains missing until the team records and uploads it.
