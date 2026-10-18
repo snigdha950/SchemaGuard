@@ -41,3 +41,7 @@ A teammate should make one actual source/test change and record it in `AI_ASSIST
 2. Run `python scripts/live_end_to_end.py` on a connected machine. Open the generated real evidence file and locate the tool events, original affected graph paths, SQL results and renamed-worker paths. This exercise has NOT been performed in the authoring environment.
 3. In the UI, explain the two different numeric counters: SQL reference successes vs FalkorDB-persisted agent successes. Disconnect the graph briefly and show that the agent fails closed rather than using fixture topology as a substitute.
 4. For a meaningful hands-on contribution, add a new required active consumer in `fixtures/demo.json` that reads the target but doesn't expose it. Write and run a new assertion; reseed graph and confirm that the agent's needed projection update changes, then document the personal code change in `AI_ASSISTANCE.md`.
+
+
+## Hands-on exercise
+Add `judge-worker-42` with Reads legacy_status checked but Output requires it unchecked. Reobserve the real graph, explain the extra path, compare the old 3-operation plan to the new minimum of 4 operations. Check that the old receipt is stale. Then reset, add a required-output worker and explain why no bounded projection removal may silently change its output. Team members should perform and document their own real tests.
