@@ -5,7 +5,7 @@ import time
 from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.concurrency import run_in_threadpool
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from .agent import AgentBlocked,run_agent
@@ -13,6 +13,7 @@ from .cli import ROOT,load_env,load_fixture
 from .fixtures import fixture_copy,version_of
 from .graph import GraphStore,GraphUnavailable,GraphEvidenceIncomplete
 from .sqlcheck import execute_plan,example_plans
+from .challenges import challenge_fixture, compare_bounded_plans, failure_reproduction, assess_receipt
 from . import queries
 
 load_env()
@@ -21,6 +22,16 @@ app.mount('/static',StaticFiles(directory=Path(__file__).parent/'static'),name='
 
 class ChangeRequest(BaseModel):
     target:str = 'users.legacy_status'
+
+class ChallengeRequest(BaseModel):
+    consumer_id:str
+    reads_target:bool=True
+    required_target:bool=False
+    active:bool=True
+
+class ReproductionRequest(BaseModel):
+    target:str='users.legacy_status'
+    actions:list[dict]
 
 def validated_target(target: str, f: dict) -> str:
     if target not in ('users.'+x for x in f['schema']['users']):
@@ -123,7 +134,7 @@ def investigation_audit(investigation_id:str):
         raise HTTPException(422,"Invalid investigation ID")
     try:
         rows=GraphStore().query(queries.INVESTIGATION_AUDIT,{'id':investigation_id},read=True)
-    except (GraphUnavailable,ImportError) as exc:
+    except (GraphUnavailable,GraphEvidenceIncomplete,ImportError) as exc:
         raise HTTPException(503,str(exc)) from exc
     if not rows:raise HTTPException(404,'Investigation not found')
     r=rows[0]
@@ -142,3 +153,51 @@ def reset():
         return {"status":"reset_and_reseeded","graph":"real FalkorDB",**seeded}
     except Exception as exc:
         raise HTTPException(503,f"Fixture restored; FalkorDB reset NOT completed ({type(exc).__name__}). Start FalkorDB and run seed.") from exc
+
+@app.get('/api/compare')
+def compare_plans(target:str='users.legacy_status'):
+    f=load_fixture(); validated_target(target,f)
+    return compare_bounded_plans(f,target)
+
+@app.post('/api/reproduction')
+def reproduce(payload:ReproductionRequest):
+    f=load_fixture(); target=validated_target(payload.target,f)
+    try: archive=failure_reproduction(f,target,payload.actions)
+    except ValueError as exc: raise HTTPException(422,str(exc)) from exc
+    return StreamingResponse(iter([archive]),media_type='application/zip',headers={'Content-Disposition':'attachment; filename="schemaguard-sql-reproduction.zip"','Cache-Control':'no-store'})
+
+@app.post('/api/challenge')
+def create_challenge(payload:ChallengeRequest):
+    f=load_fixture()
+    try:
+        updated=challenge_fixture(f,payload.consumer_id,reads_target=payload.reads_target,required_target=payload.required_target,active=payload.active)
+        store=GraphStore(); seeded=store.seed(updated)
+        ctx=store.context(updated,'users.legacy_status')
+        if ctx['state']!='complete':raise GraphEvidenceIncomplete('Reobserved graph incomplete')
+        dest=ROOT/'fixtures'/'demo.json';temp=dest.with_suffix('.tmp')
+        temp.write_text(json.dumps(updated,indent=2)+'\\n',encoding='utf8');temp.replace(dest)
+        return {'state':'challenge_reobserved','fixture_version':version_of(updated),'source':'real FalkorDB + SQLite authorizer','added_consumer':payload.consumer_id,'seed':seeded,'affected_from_graph':ctx['affected'],'graph':ctx['graph']}
+    except ValueError as exc:raise HTTPException(422,str(exc)) from exc
+    except (GraphUnavailable,GraphEvidenceIncomplete,ImportError) as exc:raise HTTPException(503,'Challenge not committed: '+str(exc)) from exc
+    except Exception as exc:raise HTTPException(503,'Challenge graph write failed ('+type(exc).__name__+'); fixture not committed') from exc
+
+@app.get('/api/receipt/{investigation_id}')
+def receipt(investigation_id:str):
+    import re
+    if not re.fullmatch(r'inv:[a-f0-9]{12}',investigation_id):raise HTTPException(422,'Invalid investigation ID')
+    f=load_fixture()
+    try:
+        store=GraphStore();rows=store.query(queries.RECEIPT_RECORD,{'id':investigation_id},read=True)
+        if not rows:raise HTTPException(404,'No persisted tested recommendation')
+        r=rows[0]
+        record={'investigation_id':investigation_id,'target':r[0],'fixture_version':r[1],'state':r[2],
+          'final_status':r[3],'model':r[4],'activity':json.loads(r[5] or '[]'),'recommendation':r[6],
+          'attempt_id':r[7],'actions':json.loads(r[8]),'verification_results':json.loads(r[9]),
+          'deterministic_verified':bool(r[10]),'completed_at':r[11],'graph_evidence_digest':r[12],
+          'verifier_version':r[13],'source':'FalkorDB-persisted-actual-agent-record'}
+        try:ctx=store.context(f,r[0]);error=None
+        except (GraphUnavailable,GraphEvidenceIncomplete) as exc:ctx=None;error=str(exc)
+        checked=assess_receipt(record,ctx,current_version=version_of(f),evidence_error=error)
+        checked['receipt_schema']='schemaguard-receipt-v1';return checked
+    except (GraphUnavailable,GraphEvidenceIncomplete,ImportError) as exc:
+        raise HTTPException(503,'Receipt could not be retrieved from real FalkorDB: '+str(exc)) from exc
