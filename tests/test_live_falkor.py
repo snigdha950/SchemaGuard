@@ -52,3 +52,29 @@ def test_real_cypher_changes_results_and_memory_survives_new_connection():
         assert reconnected.context(f,'users.legacy_status')['state']=='complete'
     finally:
         g.seed(f)
+
+def test_real_graph_verification_receipt_queries_without_llm():
+    """Real FalkorDB Cypher and independent SQL, explicitly NOT a model run."""
+    from schemaguard.sqlcheck import execute_plan,example_plans
+    from schemaguard.challenges import evidence_digest,VERIFIER_VERSION
+    f=fixture_copy();g=GraphStore();g.seed(f)
+    try:
+        ctx=g.context(f,'users.legacy_status')
+        iid='inv:000000000099'
+        g.create_investigation(iid,'users.legacy_status',ctx['fixture_version'],evidence_digest(ctx),VERIFIER_VERSION)
+        good=execute_plan(f,'users.legacy_status',example_plans('users.legacy_status',f)[2]['actions'])
+        assert good['verified']
+        aid='attempt:0000000099'
+        g.record_attempt(iid,aid,good)
+        g.save_audit(iid,'test-no-model','pending_commit',[])
+        g.recommendation(iid,'verified',aid,'Deterministic test record; not LLM')
+        assert not g.confirm_recommendation(iid,'verified',aid)
+        g.save_audit(iid,'test-no-model','verified',[{'step':1,'tool':'offline-test-not-llm'}])
+        assert g.confirm_recommendation(iid,'verified',aid)
+        rows=GraphStore().query(Q.RECEIPT_RECORD,{'id':iid},read=True)
+        assert len(rows)==1 and rows[0][12]==evidence_digest(ctx) and rows[0][13]==VERIFIER_VERSION
+        assert g.verified_recommendations(f,'users.legacy_status')>=1
+        g.seed(f)
+        assert len(GraphStore().query(Q.RECEIPT_RECORD,{'id':iid},read=True))==1
+    finally:
+        g.seed(f)
