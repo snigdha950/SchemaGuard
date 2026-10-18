@@ -1,0 +1,31 @@
+name: Real FalkorDB integration (no model)
+on:
+  push:
+    branches: [evidence-challenge-2026-10-18, main]
+  workflow_dispatch:
+jobs:
+  graph:
+    runs-on: ubuntu-latest
+    services:
+      falkordb:
+        image: falkordb/falkordb:latest
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 15
+    env:
+      FALKORDB_HOST: "127.0.0.1"
+      FALKORDB_PORT: "6379"
+      FALKORDB_GRAPH: "schemaguard_ci"
+      RUN_LIVE_FALKOR: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install -r requirements.txt
+      - name: Execute real Cypher and graph integration tests (NOT LLM)
+        run: python -m pytest tests/test_live_falkor.py -v
