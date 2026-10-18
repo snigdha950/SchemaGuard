@@ -188,6 +188,7 @@ class GraphStore:
         ctx = self.context(fixture, target)
         if ctx["state"] != "complete":
             raise GraphEvidenceIncomplete("Graph coverage incomplete: verified recommendation count unavailable")
+        from .challenges import evidence_digest, VERIFIER_VERSION
         rows = self.query(Q.VERIFIED_AGENT_RECOMMENDATIONS,
-                          {"version": ctx["fixture_version"], "target": target}, read=True)
+                          {"version": ctx["fixture_version"], "target": target, "evidence_digest":evidence_digest(ctx), "verifier_version":VERIFIER_VERSION}, read=True)
         return int(rows[0][0]) if rows else 0
