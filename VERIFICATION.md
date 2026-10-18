@@ -57,3 +57,9 @@ python -m schemaguard.cli check  # needs real FalkorDB
 
 ## Later bounded challenge verification
 New offline adversarial tests cover unseen worker names, inactive deployment, changed contract, no-read consumer, unsafe ordering, stale graph evidence, receipt version mismatch, partial graph write, and a portable SQL reproduction executed as a Python subprocess. `python -m pytest -q` locally yielded 35 passed, 1 skipped. CI on feature branch should be checked independently. Actual full LLM agent and new Cypher queries are NOT verified here.
+
+
+## Confirmed real-service verification after improvements
+- Actual FalkorDB service container, GitHub Actions run https://github.com/snigdha950/SchemaGuard/actions/runs/39148602558 : **success**, with real Cypher graph mutation/observation/receipts tests.
+- GitHub offline Actions https://github.com/snigdha950/SchemaGuard/actions/runs/39148605568 : **success**. Local pytest: 35 passed and 2 opt-in FalkorDB tests skipped. Deterministic SQL reproduction ran in a fresh Python subprocess.
+- **NOT VERIFIED:** real model tool-calling sequence, its real persisted recommendation, or full contest demo video. GitHub manual secret-backed acceptance workflow is prepared, not executed.
